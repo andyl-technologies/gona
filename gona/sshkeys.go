@@ -1,33 +1,30 @@
 package gona
 
 import (
-	"encoding/json"
+	"net/url"
 	"strconv"
 )
 
-// SSHKey is what it is
+// SSHKey Struct 
 type SSHKey struct {
-	ID          int    `json:"id,string"`
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Key         string `json:"ssh_key"`
 	Fingerprint string `json:"fingerprint"`
 }
 
-// GetSSHKeys as in many keys
+// GetSSHKeys will list all SSH Keys installed for the account
 func (c *Client) GetSSHKeys() (keys []SSHKey, err error) {
-
 	var sshkeyList []SSHKey
-
-	if err := c.get("/server/sshkeys", &sshkeyList); err != nil {
+	if err := c.get("account/ssh_keys", &sshkeyList); err != nil {
 		return nil, err
 	}
-
 	return sshkeyList, nil
 }
 
-// GetSSHKey as in one key
+// GetSSHKey will list the information on a specific key
 func (c *Client) GetSSHKey(id int) (sshkey SSHKey, err error) {
-	if err := c.get("/server/sshkeys/"+strconv.Itoa(id), &sshkey); err != nil {
+	if err := c.get("account/ssh_key/"+strconv.Itoa(id), &sshkey); err != nil {
 		return SSHKey{}, err
 	}
 	return sshkey, nil
@@ -35,35 +32,20 @@ func (c *Client) GetSSHKey(id int) (sshkey SSHKey, err error) {
 
 // CreateSSHKey creates a key
 func (c *Client) CreateSSHKey(name, key string) (sshkey SSHKey, err error) {
+	values := url.Values{}
+	values.Add("ssh_key", key)
+	values.Add("name", name)
 
-	values := map[string]string{"ssh_key": key, "name": name}
-
-	postData, _ := json.Marshal(values)
-
-	if err := c.post("/server/sshkeys", postData, &sshkey); err != nil {
+	if err := c.post("account/ssh_key", []byte(values.Encode()), &sshkey); err != nil {
 		return SSHKey{}, err
 	}
 
 	return sshkey, nil
 }
 
-// UpdateSSHKey updates it I guess
-func (c *Client) UpdateSSHKey(id int, name, key string) (SSHKey, error) {
-
-	values := map[string]string{"ssh_key": key, "name": name}
-
-	putData, _ := json.Marshal(values)
-
-	var sshKey SSHKey
-	if err := c.put("server/sshkeys/"+strconv.Itoa(id), putData, &sshKey); err != nil {
-		return SSHKey{}, err
-	}
-	return sshKey, nil
-}
-
 // DeleteSSHKey deletes a key
 func (c *Client) DeleteSSHKey(id int) error {
-	if err := c.delete("/server/sshkeys/"+strconv.Itoa(id), nil, nil); err != nil {
+	if err := c.delete("account/ssh_key/"+strconv.Itoa(id), nil, nil); err != nil {
 		return err
 	}
 	return nil

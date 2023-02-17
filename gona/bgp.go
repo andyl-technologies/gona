@@ -1,39 +1,51 @@
 package gona
 
 import (
-	"encoding/json"
+	"fmt"
+	"net/url"
 	"strconv"
 )
 
-type BGPSessions struct {
-	Sessions []BGPSession `json:"sessions"`
-	Session  *BGPSession  `json:"session"`
-	Modified bool         `json:"modified"`
-	Success  bool         `json:"success"`
+type BGPSession struct {
+	ID             int         `json:"id"`
+	CustomerIP     string      `json:"customer_peer_ip"`
+	GroupID        int         `json:"group_id"`
+	Locked         int         `json:"locked"`
+	Description    string      `json:"description"`
+	State          interface{} `json:"state"`
+	RoutesReceived interface{} `json:"routes_received"`
+	LastUpdate     interface{} `json:"last_update"`
+	ConfigStatus   int         `json:"config_status"`
+	Password       interface{} `json:"password"`
+	Prefixes       []Prefix    `json:"prefixes"`
+	ExportList     string      `json:"export_list"`
+	Community      interface{} `json:"community"`
+	ProviderPeerIP string      `json:"provider_peer_ip"`
+	Location       string      `json:"location"`
+	Latitude       string      `json:"latitude"`
+	Longitude      string      `json:"longitude"`
+	GroupName      string      `json:"group_name"`
+	ProviderIPType string      `json:"provider_ip_type"`
+	ProviderAsn    int         `json:"provider_asn,string"`
+	CustomerAsn    int         `json:"customer_asn,string"`
 }
 
-type BGPSession struct {
-	ID             int    `json:"id,string"`
-	MbID           int    `json:"mb_id,string"`
-	Description    string `json:"description"`
-	RoutesReceived string `json:"routes_received"`
-	ConfigStatus   string `json:"config_status"`
-	LastUpdate     string `json:"last_update"`
-	Locked         string `json:"locked"`
-	GroupID        int    `json:"group_id,string"`
-	GroupName      string `json:"group_name"`
-	LocationName   string `json:"location_name"`
-	CustomerIP     string `json:"customer_ip"`
-	CustomerPeerIP string `json:"customer_peer_ip"`
-	ProviderPeerIP string `json:"provider_peer_ip"`
-	ProviderIPType string `json:"provider_ip_type"`
-	ProviderASN    int    `json:"provider_asn,string"`
-	CustomerASN    int    `json:"customer_asn,string"`
-	State          string `json:"state"`
+type Prefix struct {
+	ID          int         `json:"id"`
+	MbID        int         `json:"mb_id"`
+	Prefix      string      `json:"prefix"`
+	Append      interface{} `json:"append"`
+	RuleType    string      `json:"rule_type"`
+	PrefixType  string      `json:"prefix_type"`
+	Description string      `json:"description"`
+	Date        string      `json:"date"`
+	AllowedPps  int         `json:"allowed_pps"`
+	BgpGroupID  int         `json:"bgp_group_id"`
+	PrefixID    int         `json:"prefix_id"`
 }
 
 func (s *BGPSession) IsLocked() bool {
-	return "1" == s.Locked
+	return s.Locked == 1
 }
 
 func (s *BGPSession) IsProviderIPTypeV4() bool {
@@ -41,24 +53,25 @@ func (s *BGPSession) IsProviderIPTypeV4() bool {
 }
 
 // GetBGPSession external method on Client to get your BGP session
-func (c *Client) GetBGPSession(id int) (sessions BGPSessions, err error) {
-	err = c.get("cloud/bgpsession2/"+strconv.Itoa(id), &sessions)
+func (c *Client) GetBGPSession(id int) (*BGPSession, error) {
+	var sessions *BGPSession
+	err := c.get("bgp/bgpsession/"+strconv.Itoa(id), &sessions)
 	if err != nil {
-		return BGPSessions{}, err
+		return nil, err
 	}
 
 	return sessions, nil
 }
 
 // GetBGPSessions external method on Client to get BGP sessions
-func (c *Client) GetBGPSessions(mbPkgID int) (*[]BGPSession, error) {
-	var allSessions BGPSessions
+func (c *Client) GetBGPSessions(mbPkgID int) ([]*BGPSession, error) {
+	var allSessions []*BGPSession
 
-	err := c.get("/cloud/bgpsessions2", &allSessions)
+	err := c.get("bgp/bgpsessions", &allSessions)
 	if err != nil {
 		return nil, err
 	}
-	if len(allSessions.Sessions) == 0 {
+	if len(allSessions) == 0 {
 		return nil, nil
 	}
 
@@ -72,46 +85,50 @@ func (c *Client) GetBGPSessions(mbPkgID int) (*[]BGPSession, error) {
 
 	ipsMap := *ips.GetIPsMap()
 
-	var sessionIDs []int
+	var sessions []*BGPSession
 
-	for _, session := range allSessions.Sessions {
+	for _, session := range allSessions {
 		_, exists := ipsMap[session.CustomerIP]
 		if exists {
-			sessionIDs = append(sessionIDs, session.ID)
+			ss, err := c.GetBGPSession(session.ID)
+			if err != nil {
+				return nil, err
+			}
+			sessions = append(sessions, ss)
 		}
 	}
 
-	var sessions []BGPSession
-
-	for _, id := range sessionIDs {
-		ss, err := c.GetBGPSession(id)
-		if err != nil {
-			return nil, err
-		}
-
-		sessions = append(sessions, *ss.Session)
-	}
-
-	return &sessions, nil
+	return sessions, nil
 }
 
-// CreateBGPSession external method on Client to create a BGP session.
-func (c *Client) CreateBGPSessions(mbPkgID int, groupID int, isIPV6 bool, redundant bool) (sessions BGPSessions, err error) {
-	values := map[string]string{
-		"group_id": strconv.Itoa(groupID),
-	}
+type BGPCreateSessionsInput struct {
+	MbPkgID   int `json:"mbpkgid"` // Contract BGP ID
+	GroupID   int `json:"group_id"`
+	Redundant int `json:"redundant"` //Force session redundancy
+	IPV6      int `json:"ipv6"`      // IPv6 Session
+}
+
+func (c *Client) CreateBGPSessions(mbPkgID int, groupID int, isIPV6 bool, redundant bool) (*BGPSession, error) {
+	values := make(url.Values)
+	values.Set("mbpkgid", fmt.Sprint(mbPkgID))
+	values.Set("group_id", fmt.Sprint(groupID))
 
 	if isIPV6 {
-		values["ipv6"] = "1"
+		values.Set("ipv6", "1")
 	}
 	if redundant {
-		values["redundant"] = "1"
+		values.Set("redundant", "1")
 	}
 
-	postData, _ := json.Marshal(values)
+	postData := []byte(values.Encode())
+	var err error
+	if err != nil {
+		return nil, fmt.Errorf("converting data to json: %w", err)
+	}
 
-	if err := c.post("/cloud/bgpcreatesessions/"+strconv.Itoa(mbPkgID), postData, &sessions); err != nil {
-		return BGPSessions{}, err
+	var sessions *BGPSession
+	if err := c.post("bgp/bgpcreatesessions", postData, &sessions); err != nil {
+		return nil, fmt.Errorf("posting data: %w", err)
 	}
 
 	return sessions, nil

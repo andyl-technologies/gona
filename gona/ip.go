@@ -19,8 +19,8 @@ type IPs struct {
 }
 
 type IP struct {
-	ID        int    `json:"id,string"`
-	Primary   int    `json:"primary,string"`
+	ID        int `json:"id"`
+	Primary   int `json:"primary"`
 	Reverse   string `json:"reverse"`
 	IP        string `json:"ip"`
 	Gateway   string `json:"gateway"`

@@ -1,8 +1,8 @@
 package gona
 
-// OS is a struct for storing the attributes of and OS
+// OS is a struct for storing the attributes of an OS
 type OS struct {
-	ID      int    `json:"id,string"`
+	ID      int    `json:"id"`
 	Os      string `json:"os"`
 	Type    string `json:"type"`
 	Subtype string `json:"subtype"`
@@ -13,12 +13,9 @@ type OS struct {
 
 // GetOSs returns a list of OS objects from the api
 func (c *Client) GetOSs() ([]OS, error) {
-
 	var osList []OS
-
 	if err := c.get("cloud/images", &osList); err != nil {
 		return nil, err
 	}
-
 	return osList, nil
 }

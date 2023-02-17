@@ -1,24 +1,20 @@
 package gona
 
-// Location is a struct for storing the id and name of a location
+// Location is an API response message of available deployment locations
 type Location struct {
-	ID   int    `json:"id,string"`
-	Name string `json:"name"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	IATACode  string `json:"iata_code"`
+	Continent string `json:"continent"`
+	Flag      string `json:"flat"`
+	Disabled  int    `json:"disabled"`
 }
 
 // GetLocations public method on Client to get a list of locations
 func (c *Client) GetLocations() ([]Location, error) {
-
-	var locationMap map[string]Location
-	var locationList []Location
-
-	if err := c.get("cloud/locations", &locationMap); err != nil {
+	r := make([]Location, 0)
+	if err := c.get("cloud/locations", &r); err != nil {
 		return nil, err
 	}
-
-	for _, loc := range locationMap {
-		locationList = append(locationList, loc)
-	}
-
-	return locationList, nil
+	return r, nil
 }
