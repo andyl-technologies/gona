@@ -143,14 +143,15 @@ func (c *Client) newRequest(method string, path string, body io.Reader) (*http.R
 // apiResponse is a message returned by the API that is used both for successful
 // responses and for some error responses.
 type apiResponse struct {
-	Result  string `json:"result"`
-	Message string `json:"message"`
-	Data    any    `json:"data"`
-	Code    int    `json:"code"`
+	Result  string                 `json:"result"`
+	Message string                 `json:"message"`
+	Data    interface{}            `json:"data"`
+	Code    int                    `json:"code"`
+	Fields  map[string]interface{} `json:"fields"`
 }
 
 // do internal method on Client struct for making the HTTP calls
-func (c *Client) do(req *http.Request, data any) error {
+func (c *Client) do(req *http.Request, data interface{}) error {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return err
@@ -170,11 +171,18 @@ func (c *Client) do(req *http.Request, data any) error {
 		return fmt.Errorf("could not unmarshal response %q: %w", string(body), err)
 	}
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != 422 || r.Code != http.StatusOK && r.Code != 422 {
-		return fmt.Errorf("got an error response on %s %s: code %d, response %+v", req.Method, req.URL, resp.StatusCode, r.Data)
+  // Error Handling - This currently ignores invalid mbpkdgid errors to enable the Terraform Provider
+	if (resp.StatusCode == 422 || r.Code == 422) && (r.Fields != nil && r.Fields["mbpkgid"] == nil) {
+		fieldStr := ""
+		for key, value := range r.Fields {
+			fieldStr = fieldStr + fmt.Sprintf("%s: %v, ", key, value)
+		}
+		return fmt.Errorf("got an ERROR response on %s %s: code %d / %d, response: %s / %s", req.Method, req.URL, resp.StatusCode, r.Code, r.Message, fieldStr)
 	}
-    
+
+	if (resp.StatusCode != http.StatusOK && resp.StatusCode != 422) || (r.Code != http.StatusOK && r.Code != 422) {
+		return fmt.Errorf("got an error response on %s %s: code %d / %d, response: %s / %+v", req.Method, req.URL, resp.StatusCode, r.Code, r.Message, r.Data)
+	}
+
 	return nil
 }
-
-
