@@ -56,6 +56,7 @@ type CreateServerRequest struct {
 	PackageBillingContractId string `url:"package_billing_contract_id,omitempty"`
 	CloudConfig              string `url:"cloud_config,omitempty"`
 	ScriptContent            string `url:"script_content,omitempty"`
+	Params     				 string `url:"params,omitempty"`
 }
 
 // ServerBuild is a server creation response message.
@@ -84,14 +85,18 @@ func (c *Client) CreateServer(r *CreateServerRequest) (b ServerBuild, err error)
 
 // BuildServerRequest is a set of parameters for a server re-building call.
 type BuildServerRequest struct {
-	Location      int    `url:"location,omitempty"`
-	Image         int    `url:"image,omitempty"`
-	FQDN          string `url:"fqdn,omitempty"`
-	SSHKey        string `url:"ssh_key,omitempty"`
-	SSHKeyID      int    `url:"ssh_key_id,omitempty"`
-	Password      string `url:"password,omitempty"`
-	CloudConfig   string `url:"cloud_config,omitempty"`
-	ScriptContent string `url:"script_content,omitempty"`
+	Plan                     string `url:"plan,omitempty"`
+	Location                 int    `url:"location,omitempty"`
+	Image                    int    `url:"image,omitempty"`
+	FQDN                     string `url:"fqdn,omitempty"`
+	SSHKey                   string `url:"ssh_key,omitempty"`
+	SSHKeyID                 int    `url:"ssh_key_id,omitempty"`
+	Password                 string `url:"password,omitempty"`
+	PackageBilling           string `url:"package_billing,omitempty"`
+	PackageBillingContractId string `url:"package_billing_contract_id,omitempty"`
+	CloudConfig              string `url:"cloud_config,omitempty"`
+	ScriptContent            string `url:"script_content,omitempty"`
+	Params     				 string `url:"params,omitempty"`
 }
 
 // BuildServer external method on Client to re-build an instance
@@ -103,6 +108,10 @@ func (c *Client) BuildServer(id int, r *BuildServerRequest) (b ServerBuild, err 
 	if values.Has("script_content") {
 		values.Add("script_type", "user-data")
 	}
+
+	// if r.Params != "" {
+    //     values.Add("params", r.Params)
+    // }
 
 	if err := c.post("cloud/server/build/"+strconv.Itoa(id), []byte(values.Encode()), &b); err != nil {
 		return b, err
