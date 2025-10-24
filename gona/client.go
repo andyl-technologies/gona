@@ -171,7 +171,7 @@ func (c *Client) do(req *http.Request, data interface{}) error {
 		return fmt.Errorf("could not unmarshal response %q: %w", string(body), err)
 	}
 
-  // Error Handling - This currently ignores invalid mbpkdgid errors to enable the Terraform Provider
+	// Error Handling - This currently ignores invalid mbpkdgid errors to enable the Terraform Provider
 	if (resp.StatusCode == 422 || r.Code == 422) && (r.Fields != nil && r.Fields["mbpkgid"] == nil) {
 		fieldStr := ""
 		for key, value := range r.Fields {

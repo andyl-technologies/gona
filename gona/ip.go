@@ -1,9 +1,8 @@
 package gona
 
 import (
+	"net/netip"
 	"strconv"
-
-	"inet.af/netaddr"
 )
 
 type IPType string
@@ -19,8 +18,8 @@ type IPs struct {
 }
 
 type IP struct {
-	ID        int `json:"id"`
-	Primary   int `json:"primary"`
+	ID        int    `json:"id"`
+	Primary   int    `json:"primary"`
 	Reverse   string `json:"reverse"`
 	IP        string `json:"ip"`
 	Gateway   string `json:"gateway"`
@@ -37,7 +36,7 @@ func (ips *IPs) GetIPsMap() *map[string]IPType {
 	for _, ip := range ips.IPv6 {
 		m[ip.IP] = IPv6
 
-		ip6, err := netaddr.ParseIP(ip.IP)
+		ip6, err := netip.ParseAddr(ip.IP)
 		if err == nil {
 			m[ip6.StringExpanded()] = IPv6
 		}

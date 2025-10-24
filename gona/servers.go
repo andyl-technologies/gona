@@ -56,7 +56,7 @@ type CreateServerRequest struct {
 	PackageBillingContractId string `url:"package_billing_contract_id,omitempty"`
 	CloudConfig              string `url:"cloud_config,omitempty"`
 	ScriptContent            string `url:"script_content,omitempty"`
-	Params     				 string `url:"params,omitempty"`
+	Params                   string `url:"params,omitempty"`
 }
 
 // ServerBuild is a server creation response message.
@@ -96,7 +96,7 @@ type BuildServerRequest struct {
 	PackageBillingContractId string `url:"package_billing_contract_id,omitempty"`
 	CloudConfig              string `url:"cloud_config,omitempty"`
 	ScriptContent            string `url:"script_content,omitempty"`
-	Params     				 string `url:"params,omitempty"`
+	Params                   string `url:"params,omitempty"`
 }
 
 // BuildServer external method on Client to re-build an instance
@@ -110,8 +110,8 @@ func (c *Client) BuildServer(id int, r *BuildServerRequest) (b ServerBuild, err 
 	}
 
 	// if r.Params != "" {
-    //     values.Add("params", r.Params)
-    // }
+	//     values.Add("params", r.Params)
+	// }
 
 	if err := c.post("cloud/server/build/"+strconv.Itoa(id), []byte(values.Encode()), &b); err != nil {
 		return b, err
