@@ -70,9 +70,9 @@ func NewClient(apikey string) *Client {
 // apiKeyPath is just a short internal function for appending the key to the url
 func apiKeyPath(path, apiKey string) string {
 	if strings.Contains(path, "?") {
-		return path + "&key=" + apiKey
+		return path + "&key=" + url.QueryEscape(apiKey)
 	}
-	return path + "?key=" + apiKey
+	return path + "?key=" + url.QueryEscape(apiKey)
 }
 
 func (c *Client) debugLog(format string, v ...any) {
