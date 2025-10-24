@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-// SSHKey Struct 
+// SSHKey Struct
 type SSHKey struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
