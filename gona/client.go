@@ -141,16 +141,6 @@ func (c *Client) newRequest(ctx context.Context, method string, path string, bod
 	return req, nil
 }
 
-// apiResponse is a message returned by the API that is used both for successful
-// responses and for some error responses.
-type apiResponse struct {
-	Result  string         `json:"result"`
-	Message string         `json:"message"`
-	Data    any            `json:"data"`
-	Code    int            `json:"code"`
-	Fields  map[string]any `json:"fields"`
-}
-
 // do internal method on Client struct for making the HTTP calls
 func (c *Client) do(req *http.Request, data any) error {
 	resp, err := c.client.Do(req)
@@ -165,10 +155,18 @@ func (c *Client) do(req *http.Request, data any) error {
 	}
 	c.debugLog("got a response: %s", string(body))
 
-	r := &apiResponse{
+	// Message returned by the API that is used both for successful
+	// responses and for some error responses.
+	r := struct {
+		Result  string         `json:"result"`
+		Message string         `json:"message"`
+		Data    any            `json:"data"`
+		Code    int            `json:"code"`
+		Fields  map[string]any `json:"fields"`
+	}{
 		Data: data,
 	}
-	if err := json.Unmarshal(body, r); err != nil {
+	if err := json.Unmarshal(body, &r); err != nil {
 		return fmt.Errorf("could not unmarshal response %q: %w", string(body), err)
 	}
 
