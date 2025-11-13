@@ -56,7 +56,7 @@ type CreateServerRequest struct {
 	Password                 string `url:"password,omitempty"`
 	PackageBilling           string `url:"package_billing,omitempty"`
 	PackageBillingContractId string `url:"package_billing_contract_id,omitempty"`
-	CloudConfig              string `url:"cloud_config,omitempty"`
+	CloudConfig              string // Assumed to be Base64 encoded if set
 	ScriptContent            string `url:"script_content,omitempty"`
 	Params                   string `url:"params,omitempty"`
 
@@ -76,7 +76,10 @@ func (c *Client) CreateServer(ctx context.Context, r *CreateServerRequest) (b Se
 	if err != nil {
 		return b, err
 	}
-	if values.Has("script_content") {
+	if r.CloudConfig != "" {
+		values.Add("script_type", "cloud_init")
+		values.Add("script_content", r.CloudConfig)
+	} else if values.Has("script_content") {
 		values.Add("script_type", "user-data")
 	}
 
@@ -98,7 +101,7 @@ type BuildServerRequest struct {
 	Password                 string `url:"password,omitempty"`
 	PackageBilling           string `url:"package_billing,omitempty"`
 	PackageBillingContractId string `url:"package_billing_contract_id,omitempty"`
-	CloudConfig              string `url:"cloud_config,omitempty"`
+	CloudConfig              string // Assumed to be Base64 encoded if set
 	ScriptContent            string `url:"script_content,omitempty"`
 	Params                   string `url:"params,omitempty"`
 }
@@ -109,7 +112,11 @@ func (c *Client) BuildServer(ctx context.Context, id int, r *BuildServerRequest)
 	if err != nil {
 		return b, err
 	}
-	if values.Has("script_content") {
+
+	if r.CloudConfig != "" {
+		values.Add("script_type", "cloud_init")
+		values.Add("script_content", r.CloudConfig)
+	} else if values.Has("script_content") {
 		values.Add("script_type", "user-data")
 	}
 
