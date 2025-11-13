@@ -9,9 +9,8 @@ import (
 	"testing"
 )
 
-func TestCreateServer_WithCloudConfig(t *testing.T) {
-	// Sample cloud-init configuration
-	const cloudInitYAML = `#cloud-config
+// Sample cloud-init configuration
+const cloudInitYAML = `#cloud-config
 users:
   - name: demo
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -21,6 +20,8 @@ packages:
   - curl
   - vim
 `
+
+func TestCreateServer_WithCloudConfig(t *testing.T) {
 	// Encode to Base64 as expected by the API
 	cloudConfigBase64 := base64.StdEncoding.EncodeToString([]byte(cloudInitYAML))
 
@@ -119,16 +120,6 @@ packages:
 }
 
 func TestBuildServer_WithCloudConfig(t *testing.T) {
-	// Sample cloud-init configuration
-	const cloudInitYAML = `#cloud-config
-runcmd:
-  - echo "Server rebuilt with cloud-init" > /etc/motd
-write_files:
-  - path: /etc/test.conf
-    content: |
-      # Test configuration
-      option = value
-`
 	// Encode to Base64 as expected by the API
 	cloudConfigBase64 := base64.StdEncoding.EncodeToString([]byte(cloudInitYAML))
 
@@ -222,5 +213,113 @@ write_files:
 				}
 			}
 		})
+	}
+}
+
+// TestCreateServer_CloudConfigPrecedence verifies that CloudConfig takes precedence over ScriptContent
+func TestCreateServer_CloudConfigPrecedence(t *testing.T) {
+	cloudConfigBase64 := base64.StdEncoding.EncodeToString([]byte(cloudInitYAML))
+
+	// Create mock HTTP server that captures the actual parameters
+	var capturedForm map[string][]string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		capturedForm = r.Form
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(mockAPIResponse(ServerBuild{
+			ServerID: 99999,
+			Status:   "building",
+			Build:    1,
+		}))
+	}))
+	defer server.Close()
+
+	client := NewClientCustom("test-api-key", server.URL+"/")
+	ctx := context.Background()
+
+	// Create request with both CloudConfig and ScriptContent
+	request := &CreateServerRequest{
+		Plan:          "test-plan",
+		CloudConfig:   cloudConfigBase64,
+		ScriptContent: "#!/bin/bash\necho 'old script'",
+	}
+
+	_, err := client.CreateServer(ctx, request)
+	if err != nil {
+		t.Fatalf("CreateServer() error = %v", err)
+	}
+
+	// Verify that script_type is cloud_init (not user-data)
+	scriptTypes := capturedForm["script_type"]
+	if len(scriptTypes) == 0 || scriptTypes[0] != "cloud_init" {
+		t.Errorf("script_type = %v, want 'cloud_init' when CloudConfig is set", scriptTypes)
+	}
+
+	// Verify that CloudConfig overwrites ScriptContent
+	scriptContents := capturedForm["script_content"]
+
+	// CloudConfig should be the last value (most recent addition), effectively overwriting ScriptContent
+	if len(scriptContents) == 0 {
+		t.Fatalf("script_content is empty, expected CloudConfig value")
+	}
+
+	// The last value should be CloudConfig (since it's added after ScriptContent from query.Values)
+	lastScriptContent := scriptContents[len(scriptContents)-1]
+	if lastScriptContent != cloudConfigBase64 {
+		t.Errorf("script_content (last value) = %q, want CloudConfig %q", lastScriptContent, cloudConfigBase64)
+	}
+
+	// Verify ScriptContent is NOT the final value (it should be overwritten)
+	if lastScriptContent == "#!/bin/bash\necho 'old script'" {
+		t.Errorf("script_content still contains ScriptContent, CloudConfig should overwrite it")
+	}
+}
+
+// TestBuildServer_ScriptContentOnly verifies that ScriptContent works when CloudConfig is empty
+func TestBuildServer_ScriptContentOnly(t *testing.T) {
+	scriptContent := "#!/bin/bash\necho 'Hello World'"
+
+	// Create mock HTTP server that captures the actual parameters
+	var capturedForm map[string][]string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		capturedForm = r.Form
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(mockAPIResponse(ServerBuild{
+			ServerID: 88888,
+			Status:   "rebuilding",
+			Build:    1,
+		}))
+	}))
+	defer server.Close()
+
+	client := NewClientCustom("test-api-key", server.URL+"/")
+	ctx := context.Background()
+
+	// Create request with only ScriptContent (no CloudConfig)
+	request := &BuildServerRequest{
+		Image:         100,
+		ScriptContent: scriptContent,
+	}
+
+	_, err := client.BuildServer(ctx, 88888, request)
+	if err != nil {
+		t.Fatalf("BuildServer() error = %v", err)
+	}
+
+	// Verify that script_type is user-data (not cloud_init)
+	scriptTypes := capturedForm["script_type"]
+	if len(scriptTypes) == 0 || scriptTypes[0] != "user-data" {
+		t.Errorf("script_type = %v, want 'user-data' when only ScriptContent is set", scriptTypes)
+	}
+
+	// Verify that script_content contains the ScriptContent
+	scriptContents := capturedForm["script_content"]
+	if len(scriptContents) == 0 || scriptContents[0] != scriptContent {
+		t.Errorf("script_content = %v, want %q", scriptContents, scriptContent)
 	}
 }
