@@ -6,10 +6,31 @@ This document describes the testing infrastructure available in the gona library
 
 The gona library provides comprehensive testing utilities to make it easy to write tests for code that depends on the NetActuate API:
 
-- **Interfaces** - Operation-specific interfaces for flexible mocking
-- **Test Builders** - Fluent builders for creating test data
-- **FakeClient** - In-memory fake for integration-style tests
-- **MockClient** - Configurable mock for unit tests
+- **Interfaces** - Operation-specific interfaces for flexible mocking (in `gona` package)
+- **Test Builders** - Fluent builders for creating test data (in `testing` package)
+- **FakeClient** - In-memory fake for integration-style tests (in `testing` package)
+- **MockClient** - Configurable mock for unit tests (in `testing` package)
+
+## Package Structure
+
+Test utilities are organized in a dedicated subpackage to separate test code from production code:
+
+```go
+import (
+    "github.com/netactuate/gona/gona"           // Production types and Client
+    gonatesting "github.com/netactuate/gona/testing"  // Test utilities
+)
+```
+
+The main `gona` package contains:
+- Production `Client` implementation
+- Operation interfaces (ServerOperations, SSHKeyOperations, etc.)
+- All domain types (Server, SSHKey, BGPSession, etc.)
+
+The `gona/testing` subpackage contains:
+- Test data builders (ServerBuilder, SSHKeyBuilder, etc.)
+- FakeClient implementation
+- MockClient implementation
 
 ## Interfaces
 
@@ -59,7 +80,7 @@ Fluent builders make it easy to create test data with sensible defaults.
 ### ServerBuilder
 
 ```go
-server := gona.NewServerBuilder().
+server := gonatesting.NewServerBuilder().
     WithID(123).
     WithName("test-server.example.com").
     WithStatus("RUNNING").
@@ -70,28 +91,28 @@ server := gona.NewServerBuilder().
 
 Quick helpers:
 ```go
-server := gona.NewRunningServer(123)       // Server in RUNNING state
-server := gona.NewTerminatedServer(456)    // Server in TERMINATED state
-server := gona.NewTestServer(789, "test")  // Custom ID and name
+server := gonatesting.NewRunningServer(123)       // Server in RUNNING state
+server := gonatesting.NewTerminatedServer(456)    // Server in TERMINATED state
+server := gonatesting.NewTestServer(789, "test")  // Custom ID and name
 ```
 
 ### SSHKeyBuilder
 
 ```go
-key := gona.NewSSHKeyBuilder().
+key := gonatesting.NewSSHKeyBuilder().
     WithID(100).
     WithName("deploy-key").
     WithKey("ssh-rsa AAAAB3...").
     Build()
 
 // Quick helper
-key := gona.NewTestSSHKey(100, "my-key")
+key := gonatesting.NewTestSSHKey(100, "my-key")
 ```
 
 ### BGPSessionBuilder
 
 ```go
-session := gona.NewBGPSessionBuilder().
+session := gonatesting.NewBGPSessionBuilder().
     WithID(500).
     WithCustomerIP("198.51.100.10").
     WithGroupID(1).
@@ -99,14 +120,14 @@ session := gona.NewBGPSessionBuilder().
     BuildPtr()
 
 // Quick helpers
-session := gona.NewTestBGPSession(500)       // IPv4 session
-session := gona.NewTestBGPSessionIPv6(501)   // IPv6 session
+session := gonatesting.NewTestBGPSession(500)       // IPv4 session
+session := gonatesting.NewTestBGPSessionIPv6(501)   // IPv6 session
 ```
 
 ### IPsBuilder
 
 ```go
-ips := gona.NewIPsBuilder().
+ips := gonatesting.NewIPsBuilder().
     ClearIPv4().
     ClearIPv6().
     AddIPv4("192.0.2.10", "192.0.2.1", "255.255.255.0", true).
@@ -114,13 +135,13 @@ ips := gona.NewIPsBuilder().
     Build()
 
 // Quick helper
-ips := gona.NewTestIPs(123)  // IPs for server ID 123
+ips := gonatesting.NewTestIPs(123)  // IPs for server ID 123
 ```
 
 ### LocationBuilder
 
 ```go
-location := gona.NewLocationBuilder().
+location := gonatesting.NewLocationBuilder().
     WithID(1).
     WithName("AMS Amsterdam").
     WithIATACode("AMS").
@@ -128,13 +149,13 @@ location := gona.NewLocationBuilder().
     Build()
 
 // Quick helper
-location := gona.NewTestLocation(1, "AMS Amsterdam")
+location := gonatesting.NewTestLocation(1, "AMS Amsterdam")
 ```
 
 ### OSBuilder
 
 ```go
-os := gona.NewOSBuilder().
+os := gonatesting.NewOSBuilder().
     WithID(1).
     WithName("Ubuntu 22.04 LTS").
     WithType("linux").
@@ -142,7 +163,7 @@ os := gona.NewOSBuilder().
     Build()
 
 // Quick helper
-os := gona.NewTestOS(1, "Ubuntu 22.04 LTS")
+os := gonatesting.NewTestOS(1, "Ubuntu 22.04 LTS")
 ```
 
 ## FakeClient
@@ -155,12 +176,14 @@ os := gona.NewTestOS(1, "Ubuntu 22.04 LTS")
 import (
     "context"
     "testing"
+
     "github.com/netactuate/gona/gona"
+    gonatesting "github.com/netactuate/gona/testing"
 )
 
 func TestServerLifecycle(t *testing.T) {
     // Create fake client with default test data
-    fake := gona.NewFakeClient()
+    fake := gonatesting.NewFakeClient()
     ctx := context.Background()
 
     // Create a server
@@ -191,11 +214,11 @@ func TestServerLifecycle(t *testing.T) {
 
 ```go
 func TestWithExistingServer(t *testing.T) {
-    fake := gona.NewFakeClient()
+    fake := gonatesting.NewFakeClient()
     ctx := context.Background()
 
     // Add server to fake's state
-    server := gona.NewRunningServer(123)
+    server := gonatesting.NewRunningServer(123)
     fake.AddServer(server)
 
     // Now GetServer will return it
@@ -214,7 +237,7 @@ func TestWithExistingServer(t *testing.T) {
 
 ```go
 func TestCreateServerError(t *testing.T) {
-    fake := gona.NewFakeClient()
+    fake := gonatesting.NewFakeClient()
     ctx := context.Background()
 
     // Inject error for CreateServer
@@ -241,7 +264,7 @@ func TestCreateServerError(t *testing.T) {
 
 ```go
 func TestCallTracking(t *testing.T) {
-    fake := gona.NewFakeClient()
+    fake := gonatesting.NewFakeClient()
     ctx := context.Background()
 
     fake.GetServer(ctx, 123)
@@ -299,7 +322,7 @@ FakeClient comes pre-loaded with:
 func TestWithMock(t *testing.T) {
     ctx := context.Background()
 
-    mock := &gona.MockClient{
+    mock := &gonatesting.MockClient{
         GetServerFunc: func(ctx context.Context, id int) (gona.Server, error) {
             // Return exact response you need
             return gona.Server{
@@ -327,7 +350,7 @@ func TestWithMock(t *testing.T) {
 func TestMockError(t *testing.T) {
     ctx := context.Background()
 
-    mock := &gona.MockClient{
+    mock := &gonatesting.MockClient{
         DeleteServerFunc: func(ctx context.Context, id int, cancelBilling bool) error {
             if id == 404 {
                 return fmt.Errorf("server not found")
@@ -356,7 +379,7 @@ func TestMockError(t *testing.T) {
 func TestMockCallTracking(t *testing.T) {
     ctx := context.Background()
 
-    mock := &gona.MockClient{
+    mock := &gonatesting.MockClient{
         CreateSSHKeyFunc: func(ctx context.Context, name, key string) (gona.SSHKey, error) {
             return gona.SSHKey{ID: 1, Name: name, Key: key}, nil
         },
@@ -378,7 +401,7 @@ If you call a method without configuring its function, MockClient returns a clea
 
 ```go
 func TestNotConfigured(t *testing.T) {
-    mock := &gona.MockClient{}
+    mock := &gonatesting.MockClient{}
     ctx := context.Background()
 
     _, err := mock.GetServer(ctx, 123)
@@ -399,14 +422,14 @@ func TestServerCreationWithBuilder(t *testing.T) {
     ctx := context.Background()
 
     // Use builder to create expected server
-    expectedServer := gona.NewServerBuilder().
+    expectedServer := gonatesting.NewServerBuilder().
         WithID(123).
         WithName("test.example.com").
         WithStatus("RUNNING").
         Build()
 
     // Configure mock to return it
-    mock := &gona.MockClient{
+    mock := &gonatesting.MockClient{
         GetServerFunc: func(ctx context.Context, id int) (gona.Server, error) {
             if id == expectedServer.ID {
                 return expectedServer, nil
@@ -440,7 +463,7 @@ func ScaleServers(client gona.ServerOperations, count int) error {
 
 // Test with mock implementing only ServerOperations
 func TestScaleServers(t *testing.T) {
-    mock := &gona.MockClient{
+    mock := &gonatesting.MockClient{
         CreateServerFunc: func(ctx context.Context, r *gona.CreateServerRequest) (gona.ServerBuild, error) {
             return gona.ServerBuild{ServerID: 123}, nil
         },
@@ -460,7 +483,7 @@ func TestScaleServers(t *testing.T) {
 
 ✅ **Good** - Using builders with defaults:
 ```go
-server := gona.NewServerBuilder().WithID(123).Build()
+server := gonatesting.NewServerBuilder().WithID(123).Build()
 ```
 
 ❌ **Avoid** - Manual struct construction:
@@ -498,7 +521,7 @@ func DeployServer(client gona.ClientInterface, req *gona.CreateServerRequest) er
 Always test error paths using error injection:
 
 ```go
-fake := gona.NewFakeClient()
+fake := gonatesting.NewFakeClient()
 fake.CreateServerError = fmt.Errorf("quota exceeded")
 // Test error handling
 ```
