@@ -12,12 +12,21 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go: ["stable", "oldstable"]
+        go: ["stable"]
+        rev:
+          [
+            "${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}",
+            "${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}",
+          ]
+        include:
+          - go: "oldstable"
+            rev: "${{github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha}}"
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: "${{ matrix.rev }}"
       - name: Setup Go environment
         uses: actions/setup-go@v6
         with:
@@ -38,13 +47,15 @@ jobs:
         if: matrix.go == 'stable'
         uses: actions/upload-artifact@v5
         with:
-          name: code-coverage-${{ matrix.go }}
+          name: "code-coverage"
           path: cover.out
+          overwrite: true
 
   code_coverage:
     name: "Code coverage report"
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: build
     permissions:
       contents: read
@@ -53,5 +64,5 @@ jobs:
     steps:
       - uses: fgrosse/go-coverage-report@v1.2.0
         with:
-          coverage-artifact-name: "code-coverage-stable"
+          coverage-artifact-name: "code-coverage"
           coverage-file-name: "cover.out"
