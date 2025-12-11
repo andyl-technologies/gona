@@ -52,7 +52,12 @@ type FakeClient struct {
 	}
 }
 
-// NewFakeClient creates a new FakeClient with default test data
+// NewFakeClient creates a new FakeClient with default test data.
+//
+// Default IPs use RFC-reserved documentation ranges that will never
+// appear in production:
+//   - IPv4: 192.0.2.0/24 (RFC 5737 TEST-NET-1)
+//   - IPv6: 2001:db8::/32 (RFC 3849)
 func NewFakeClient() *FakeClient {
 	return &FakeClient{
 		servers:          make(map[int]gona.Server),
