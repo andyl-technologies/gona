@@ -506,3 +506,51 @@ func (f *FakeClient) ResetCalls() {
 	defer f.calltrack.Unlock()
 	f.calltrack.calls = nil
 }
+
+// Reset clears all state from the FakeClient, returning it to a fresh state.
+// This is useful for reusing a FakeClient instance across multiple tests.
+func (f *FakeClient) Reset() {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	// Clear all state maps
+	f.servers = make(map[int]gona.Server)
+	f.sshKeys = make(map[int]gona.SSHKey)
+	f.bgpSessions = make(map[int][]*gona.BGPSession)
+	f.ips = make(map[int]gona.IPs)
+
+	// Reset counters to initial values
+	f.nextServerID = 1000
+	f.nextSSHKeyID = 100
+	f.nextBGPSessionID = 500
+
+	// Clear all error fields
+	f.CreateServerError = nil
+	f.GetServerError = nil
+	f.BuildServerError = nil
+	f.DeleteServerError = nil
+	f.UnlinkServerError = nil
+	f.CreateSSHKeyError = nil
+	f.GetSSHKeyError = nil
+	f.DeleteSSHKeyError = nil
+	f.CreateBGPSessionsError = nil
+	f.GetBGPSessionsError = nil
+	f.GetIPsError = nil
+	f.GetLocationsError = nil
+	f.GetOSsError = nil
+
+	// Restore default locations and OSes
+	f.locations = []gona.Location{
+		{ID: 1, Name: "AMS Amsterdam", IATACode: "AMS", Continent: "EU"},
+		{ID: 2, Name: "LAX Los Angeles", IATACode: "LAX", Continent: "NA"},
+		{ID: 3, Name: "SJC San Jose", IATACode: "SJC", Continent: "NA"},
+	}
+	f.oses = []gona.OS{
+		{ID: 1, Os: "Ubuntu 22.04 LTS", Type: "linux", Bits: "64"},
+		{ID: 2, Os: "Debian 12", Type: "linux", Bits: "64"},
+		{ID: 3, Os: "Rocky Linux 9", Type: "linux", Bits: "64"},
+	}
+
+	// Also reset call tracking
+	f.ResetCalls()
+}
