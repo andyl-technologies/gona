@@ -87,6 +87,17 @@ func (f *FakeClient) CreateServer(ctx context.Context, r *gona.CreateServerReque
 		return gona.ServerBuild{}, f.CreateServerError
 	}
 
+	// Validate request
+	if r == nil {
+		return gona.ServerBuild{}, fmt.Errorf("CreateServerRequest cannot be nil")
+	}
+	if r.Plan == "" {
+		return gona.ServerBuild{}, fmt.Errorf("Plan is required")
+	}
+	if r.Location <= 0 {
+		return gona.ServerBuild{}, fmt.Errorf("invalid Location ID: %d", r.Location)
+	}
+
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -157,6 +168,14 @@ func (f *FakeClient) BuildServer(ctx context.Context, id int, r *gona.BuildServe
 	f.trackCall(fmt.Sprintf("BuildServer(%d)", id))
 	if f.BuildServerError != nil {
 		return gona.ServerBuild{}, f.BuildServerError
+	}
+
+	// Validate parameters
+	if id <= 0 {
+		return gona.ServerBuild{}, fmt.Errorf("invalid server ID: %d", id)
+	}
+	if r == nil {
+		return gona.ServerBuild{}, fmt.Errorf("BuildServerRequest cannot be nil")
 	}
 
 	f.mu.Lock()
@@ -243,6 +262,11 @@ func (f *FakeClient) CreateSSHKey(ctx context.Context, name, key string) (gona.S
 		return gona.SSHKey{}, f.CreateSSHKeyError
 	}
 
+	// Validate parameters
+	if name == "" {
+		return gona.SSHKey{}, fmt.Errorf("SSH key name cannot be empty")
+	}
+
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -301,6 +325,14 @@ func (f *FakeClient) CreateBGPSessions(ctx context.Context, mbPkgID int, groupID
 	f.trackCall(fmt.Sprintf("CreateBGPSessions(%d, %d, %v, %v)", mbPkgID, groupID, isIPV6, redundant))
 	if f.CreateBGPSessionsError != nil {
 		return nil, f.CreateBGPSessionsError
+	}
+
+	// Validate parameters
+	if mbPkgID <= 0 {
+		return nil, fmt.Errorf("invalid mbPkgID: %d", mbPkgID)
+	}
+	if groupID <= 0 {
+		return nil, fmt.Errorf("invalid groupID: %d", groupID)
 	}
 
 	f.mu.Lock()
