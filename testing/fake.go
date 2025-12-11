@@ -19,7 +19,7 @@ var _ gona.ClientInterface = (*FakeClient)(nil)
 //	fake.AddServer(Server{ID: 123, Name: "test-server", ServerStatus: "RUNNING"})
 //	server, err := fake.GetServer(ctx, 123)  // Returns the added server
 type FakeClient struct {
-	mu               sync.Mutex
+	mu               sync.RWMutex
 	servers          map[int]gona.Server
 	sshKeys          map[int]gona.SSHKey
 	bgpSessions      map[int][]*gona.BGPSession
@@ -152,8 +152,8 @@ func (f *FakeClient) GetServer(ctx context.Context, id int) (gona.Server, error)
 		return gona.Server{}, f.GetServerError
 	}
 
-	f.mu.Lock()
-	defer f.mu.Unlock()
+	f.mu.RLock()
+	defer f.mu.RUnlock()
 
 	server, exists := f.servers[id]
 	if !exists {
@@ -291,8 +291,8 @@ func (f *FakeClient) GetSSHKey(ctx context.Context, id int) (gona.SSHKey, error)
 		return gona.SSHKey{}, f.GetSSHKeyError
 	}
 
-	f.mu.Lock()
-	defer f.mu.Unlock()
+	f.mu.RLock()
+	defer f.mu.RUnlock()
 
 	key, exists := f.sshKeys[id]
 	if !exists {
@@ -373,15 +373,18 @@ func (f *FakeClient) GetBGPSessions(ctx context.Context, mbPkgID int) ([]*gona.B
 		return nil, f.GetBGPSessionsError
 	}
 
-	f.mu.Lock()
-	defer f.mu.Unlock()
+	f.mu.RLock()
+	defer f.mu.RUnlock()
 
 	sessions, exists := f.bgpSessions[mbPkgID]
 	if !exists {
 		return []*gona.BGPSession{}, nil
 	}
 
-	return sessions, nil
+	// Return defensive copy
+	result := make([]*gona.BGPSession, len(sessions))
+	copy(result, sessions)
+	return result, nil
 }
 
 // GetIPs implements ClientInterface
@@ -391,8 +394,8 @@ func (f *FakeClient) GetIPs(ctx context.Context, mbPkgID int) (gona.IPs, error) 
 		return gona.IPs{}, f.GetIPsError
 	}
 
-	f.mu.Lock()
-	defer f.mu.Unlock()
+	f.mu.RLock()
+	defer f.mu.RUnlock()
 
 	ips, exists := f.ips[mbPkgID]
 	if !exists {
@@ -420,10 +423,13 @@ func (f *FakeClient) GetLocations(ctx context.Context) ([]gona.Location, error) 
 		return nil, f.GetLocationsError
 	}
 
-	f.mu.Lock()
-	defer f.mu.Unlock()
+	f.mu.RLock()
+	defer f.mu.RUnlock()
 
-	return f.locations, nil
+	// Return defensive copy
+	locations := make([]gona.Location, len(f.locations))
+	copy(locations, f.locations)
+	return locations, nil
 }
 
 // GetOSs implements ClientInterface
@@ -433,10 +439,13 @@ func (f *FakeClient) GetOSs(ctx context.Context) ([]gona.OS, error) {
 		return nil, f.GetOSsError
 	}
 
-	f.mu.Lock()
-	defer f.mu.Unlock()
+	f.mu.RLock()
+	defer f.mu.RUnlock()
 
-	return f.oses, nil
+	// Return defensive copy
+	oses := make([]gona.OS, len(f.oses))
+	copy(oses, f.oses)
+	return oses, nil
 }
 
 // Helper methods for FakeClient
