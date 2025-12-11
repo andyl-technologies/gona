@@ -257,23 +257,15 @@ func TestCreateServer_CloudConfigPrecedence(t *testing.T) {
 		t.Errorf("script_type = %v, want 'cloud_init' when CloudConfig is set", scriptTypes)
 	}
 
-	// Verify that CloudConfig overwrites ScriptContent
+	// Verify that CloudConfig replaces ScriptContent (due to values.Set())
 	scriptContents := capturedForm["script_content"]
 
-	// CloudConfig should be the last value (most recent addition), effectively overwriting ScriptContent
-	if len(scriptContents) == 0 {
-		t.Fatalf("script_content is empty, expected CloudConfig value")
+	// With values.Set(), there should be exactly one value (CloudConfig replaces ScriptContent)
+	if len(scriptContents) != 1 {
+		t.Fatalf("script_content should have exactly 1 value, got %d", len(scriptContents))
 	}
-
-	// The last value should be CloudConfig (since it's added after ScriptContent from query.Values)
-	lastScriptContent := scriptContents[len(scriptContents)-1]
-	if lastScriptContent != cloudConfigBase64 {
-		t.Errorf("script_content (last value) = %q, want CloudConfig %q", lastScriptContent, cloudConfigBase64)
-	}
-
-	// Verify ScriptContent is NOT the final value (it should be overwritten)
-	if lastScriptContent == "#!/bin/bash\necho 'old script'" {
-		t.Errorf("script_content still contains ScriptContent, CloudConfig should overwrite it")
+	if scriptContents[0] != cloudConfigBase64 {
+		t.Errorf("script_content = %q, want CloudConfig %q", scriptContents[0], cloudConfigBase64)
 	}
 }
 
