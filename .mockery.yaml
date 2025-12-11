@@ -1,0 +1,15 @@
+with-expecter: true
+disable-version-string: true
+resolve-type-alias: false
+dir: "testing/mocks"
+outpkg: mocks
+filename: "{{.InterfaceName}}.go"
+packages:
+  github.com/netactuate/gona/gona:
+    interfaces:
+      ServerOperations:
+      SSHKeyOperations:
+      BGPSessionOperations:
+      IPOperations:
+      MetadataOperations:
+      ClientInterface:

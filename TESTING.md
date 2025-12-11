@@ -9,16 +9,17 @@ The gona library provides comprehensive testing utilities to make it easy to wri
 - **Interfaces** - Operation-specific interfaces for flexible mocking (in `gona` package)
 - **Test Builders** - Fluent builders for creating test data (in `testing` package)
 - **FakeClient** - In-memory fake for integration-style tests (in `testing` package)
-- **MockClient** - Configurable mock for unit tests (in `testing` package)
+- **MockClient** - Auto-generated type-safe mocks (in `testing` package)
 
 ## Package Structure
 
-Test utilities are organized in a dedicated subpackage to separate test code from production code:
+Test utilities are organized in dedicated subpackages to separate test code from production code:
 
 ```go
 import (
-    "github.com/netactuate/gona/gona"           // Production types and Client
-    gonatesting "github.com/netactuate/gona/testing"  // Test utilities
+    "github.com/netactuate/gona/gona"                      // Production types and Client
+    gonatesting "github.com/netactuate/gona/testing"  // Test builders and fakes
+    "github.com/netactuate/gona/testing/mocks"        // Auto-generated mocks
 )
 ```
 
@@ -29,8 +30,11 @@ The main `gona` package contains:
 
 The `gona/testing` subpackage contains:
 - Test data builders (ServerBuilder, SSHKeyBuilder, etc.)
-- FakeClient implementation
-- MockClient implementation
+- FakeClient implementation (stateful in-memory fake)
+
+The `gona/testing/mocks` subpackage contains:
+- Auto-generated mocks using [mockery](https://vektra.github.io/mockery/)
+- Type-safe mocks with [testify/mock](https://pkg.go.dev/github.com/stretchr/testify/mock)
 
 ## Interfaces
 
@@ -178,7 +182,7 @@ import (
     "testing"
 
     "github.com/netactuate/gona/gona"
-    gonatesting "github.com/netactuate/gona/testing"
+    gonatesting "github.com/netactuate/gona/gona/testing"
 )
 
 func TestServerLifecycle(t *testing.T) {
@@ -312,35 +316,54 @@ FakeClient comes pre-loaded with:
 - ID 2: "Debian 12"
 - ID 3: "Rocky Linux 9"
 
-## MockClient
+## Generated Mocks
 
-`MockClient` provides configurable function fields for precise control in unit tests. Each method can be configured with a custom function.
+The library uses [mockery](https://vektra.github.io/mockery/) to auto-generate type-safe mocks from interfaces. These mocks use [testify/mock](https://pkg.go.dev/github.com/stretchr/testify/mock) for powerful mock expectations and assertions.
+
+### Available Mocks
+
+Mocks are generated for all operation interfaces in the `gona/testing/mocks` package:
+- `MockServerOperations`
+- `MockSSHKeyOperations`
+- `MockBGPSessionOperations`
+- `MockIPOperations`
+- `MockMetadataOperations`
+- `MockClientInterface` (composed of all operation interfaces)
 
 ### Basic Usage
 
 ```go
+import (
+    "context"
+    "testing"
+
+    "github.com/netactuate/gona/gona"
+    "github.com/netactuate/gona/gona/testing/mocks"
+    "github.com/stretchr/testify/assert"
+)
+
 func TestWithMock(t *testing.T) {
     ctx := context.Background()
 
-    mock := &gonatesting.MockClient{
-        GetServerFunc: func(ctx context.Context, id int) (gona.Server, error) {
-            // Return exact response you need
-            return gona.Server{
-                ID:           id,
-                Name:         "mocked-server",
-                ServerStatus: "RUNNING",
-            }, nil
-        },
-    }
+    // Create mock
+    mockServer := mocks.NewMockServerOperations(t)
 
-    server, err := mock.GetServer(ctx, 999)
-    if err != nil {
-        t.Fatalf("GetServer failed: %v", err)
-    }
+    // Set up expectation using EXPECT() style
+    mockServer.EXPECT().
+        GetServer(ctx, 999).
+        Return(gona.Server{
+            ID:           999,
+            Name:         "mocked-server",
+            ServerStatus: "RUNNING",
+        }, nil)
 
-    if server.ID != 999 {
-        t.Errorf("expected ID 999, got %d", server.ID)
-    }
+    // Call the mocked method
+    server, err := mockServer.GetServer(ctx, 999)
+
+    // Assert results
+    assert.NoError(t, err)
+    assert.Equal(t, 999, server.ID)
+    assert.Equal(t, "mocked-server", server.Name)
 }
 ```
 
@@ -349,75 +372,80 @@ func TestWithMock(t *testing.T) {
 ```go
 func TestMockError(t *testing.T) {
     ctx := context.Background()
+    mockServer := mocks.NewMockServerOperations(t)
 
-    mock := &gonatesting.MockClient{
-        DeleteServerFunc: func(ctx context.Context, id int, cancelBilling bool) error {
-            if id == 404 {
-                return fmt.Errorf("server not found")
-            }
-            return nil
-        },
-    }
+    // Expect specific error
+    mockServer.EXPECT().
+        DeleteServer(ctx, 404, false).
+        Return(fmt.Errorf("server not found"))
 
     // Test error case
-    err := mock.DeleteServer(ctx, 404, false)
-    if err == nil {
-        t.Fatal("expected error, got nil")
-    }
-
-    // Test success case
-    err = mock.DeleteServer(ctx, 123, false)
-    if err != nil {
-        t.Fatalf("unexpected error: %v", err)
-    }
+    err := mockServer.DeleteServer(ctx, 404, false)
+    assert.Error(t, err)
+    assert.Equal(t, "server not found", err.Error())
 }
 ```
 
-### Call Tracking
+### Multiple Expectations
 
 ```go
-func TestMockCallTracking(t *testing.T) {
+func TestMultipleCalls(t *testing.T) {
     ctx := context.Background()
+    mockSSH := mocks.NewMockSSHKeyOperations(t)
 
-    mock := &gonatesting.MockClient{
-        CreateSSHKeyFunc: func(ctx context.Context, name, key string) (gona.SSHKey, error) {
-            return gona.SSHKey{ID: 1, Name: name, Key: key}, nil
-        },
-    }
+    // Set up multiple expectations
+    mockSSH.EXPECT().
+        CreateSSHKey(ctx, "key1", "ssh-rsa AAA...").
+        Return(gona.SSHKey{ID: 1, Name: "key1"}, nil).
+        Once()
 
-    mock.CreateSSHKey(ctx, "key1", "ssh-rsa AAA...")
-    mock.CreateSSHKey(ctx, "key2", "ssh-rsa BBB...")
+    mockSSH.EXPECT().
+        CreateSSHKey(ctx, "key2", "ssh-rsa BBB...").
+        Return(gona.SSHKey{ID: 2, Name: "key2"}, nil).
+        Once()
 
-    calls := mock.GetCalls()
-    if len(calls) != 2 {
-        t.Errorf("expected 2 calls, got %d", len(calls))
-    }
+    // Execute calls
+    key1, err := mockSSH.CreateSSHKey(ctx, "key1", "ssh-rsa AAA...")
+    assert.NoError(t, err)
+    assert.Equal(t, 1, key1.ID)
+
+    key2, err := mockSSH.CreateSSHKey(ctx, "key2", "ssh-rsa BBB...")
+    assert.NoError(t, err)
+    assert.Equal(t, 2, key2.ID)
+
+    // Verify all expectations were met (automatic with NewMock*  (t))
 }
 ```
 
-### Not Configured Error
+### Regenerating Mocks
 
-If you call a method without configuring its function, MockClient returns a clear error:
+Mocks are auto-generated using mockery. To regenerate after interface changes:
 
-```go
-func TestNotConfigured(t *testing.T) {
-    mock := &gonatesting.MockClient{}
-    ctx := context.Background()
+```bash
+# Install mockery (once)
+go install github.com/vektra/mockery/v2@latest
 
-    _, err := mock.GetServer(ctx, 123)
-    if err == nil {
-        t.Fatal("expected error for unconfigured method")
-    }
+# Regenerate all mocks
+mockery
 
-    // Error will be: "GetServerFunc not configured"
-}
+# Or use the full path if not in PATH
+~/go/bin/mockery
 ```
+
+Configuration is in `.mockery.yaml` at the repository root.
 
 ## Combining Approaches
 
-You can combine builders with fake/mock clients for flexible testing:
+You can combine builders with mocks for flexible testing:
 
 ```go
+import (
+    "github.com/netactuate/gona/gona"
+    gonatesting "github.com/netactuate/gona/gona/testing"
+    "github.com/netactuate/gona/gona/testing/mocks"
+    "github.com/stretchr/testify/assert"
+)
+
 func TestServerCreationWithBuilder(t *testing.T) {
     ctx := context.Background()
 
@@ -429,24 +457,15 @@ func TestServerCreationWithBuilder(t *testing.T) {
         Build()
 
     // Configure mock to return it
-    mock := &gonatesting.MockClient{
-        GetServerFunc: func(ctx context.Context, id int) (gona.Server, error) {
-            if id == expectedServer.ID {
-                return expectedServer, nil
-            }
-            return gona.Server{}, fmt.Errorf("server not found")
-        },
-    }
+    mockServer := mocks.NewMockServerOperations(t)
+    mockServer.EXPECT().
+        GetServer(ctx, 123).
+        Return(expectedServer, nil)
 
     // Test
-    server, err := mock.GetServer(ctx, 123)
-    if err != nil {
-        t.Fatalf("unexpected error: %v", err)
-    }
-
-    if server.Name != "test.example.com" {
-        t.Errorf("expected name test.example.com, got %s", server.Name)
-    }
+    server, err := mockServer.GetServer(ctx, 123)
+    assert.NoError(t, err)
+    assert.Equal(t, "test.example.com", server.Name)
 }
 ```
 
@@ -463,17 +482,20 @@ func ScaleServers(client gona.ServerOperations, count int) error {
 
 // Test with mock implementing only ServerOperations
 func TestScaleServers(t *testing.T) {
-    mock := &gonatesting.MockClient{
-        CreateServerFunc: func(ctx context.Context, r *gona.CreateServerRequest) (gona.ServerBuild, error) {
-            return gona.ServerBuild{ServerID: 123}, nil
-        },
-    }
+    ctx := context.Background()
+    mockServer := mocks.NewMockServerOperations(t)
+
+    // Set up expectations for server creation
+    mockServer.EXPECT().
+        CreateServer(ctx, mock.Anything).
+        Return(gona.ServerBuild{ServerID: 123}, nil).
+        Times(3)
 
     // Mock satisfies ServerOperations interface
-    err := ScaleServers(mock, 3)
-    if err != nil {
-        t.Fatalf("ScaleServers failed: %v", err)
-    }
+    err := ScaleServers(mockServer, 3)
+    assert.NoError(t, err)
+
+    // Expectations are verified automatically
 }
 ```
 
@@ -499,8 +521,13 @@ server := gona.Server{
 ### Choose the Right Test Double
 
 - **FakeClient** - Integration-style tests, stateful behavior, multiple operations
-- **MockClient** - Unit tests, precise control, single operations
+- **Generated Mocks** - Unit tests, precise expectations, strict verification
 - **Builders** - Creating test data for any approach
+
+**When to use each:**
+- Use **FakeClient** when testing workflows that span multiple operations
+- Use **Generated Mocks** when testing single functions with specific expectations
+- Use **Builders** to create consistent test data for both approaches
 
 ### Interface Segregation
 
