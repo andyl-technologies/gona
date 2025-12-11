@@ -78,7 +78,7 @@ func (c *Client) CreateServer(ctx context.Context, r *CreateServerRequest) (b Se
 	}
 	if r.CloudConfig != "" {
 		values.Add("script_type", "cloud_init")
-		values.Add("script_content", r.CloudConfig)
+		values.Set("script_content", r.CloudConfig)
 	} else if values.Has("script_content") {
 		values.Add("script_type", "user-data")
 	}
@@ -115,7 +115,7 @@ func (c *Client) BuildServer(ctx context.Context, id int, r *BuildServerRequest)
 
 	if r.CloudConfig != "" {
 		values.Add("script_type", "cloud_init")
-		values.Add("script_content", r.CloudConfig)
+		values.Set("script_content", r.CloudConfig)
 	} else if values.Has("script_content") {
 		values.Add("script_type", "user-data")
 	}
