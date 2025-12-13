@@ -22,9 +22,9 @@ func (_m *MockServerOperations) EXPECT() *MockServerOperations_Expecter {
 	return &MockServerOperations_Expecter{mock: &_m.Mock}
 }
 
-// BuildServer provides a mock function with given fields: _a0, id, r
-func (_m *MockServerOperations) BuildServer(_a0 context.Context, id int, r *gona.BuildServerRequest) (gona.ServerBuild, error) {
-	ret := _m.Called(_a0, id, r)
+// BuildServer provides a mock function with given fields: ctx, id, r
+func (_m *MockServerOperations) BuildServer(ctx context.Context, id int, r *gona.BuildServerRequest) (gona.ServerBuild, error) {
+	ret := _m.Called(ctx, id, r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for BuildServer")
@@ -33,16 +33,16 @@ func (_m *MockServerOperations) BuildServer(_a0 context.Context, id int, r *gona
 	var r0 gona.ServerBuild
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int, *gona.BuildServerRequest) (gona.ServerBuild, error)); ok {
-		return rf(_a0, id, r)
+		return rf(ctx, id, r)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int, *gona.BuildServerRequest) gona.ServerBuild); ok {
-		r0 = rf(_a0, id, r)
+		r0 = rf(ctx, id, r)
 	} else {
 		r0 = ret.Get(0).(gona.ServerBuild)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int, *gona.BuildServerRequest) error); ok {
-		r1 = rf(_a0, id, r)
+		r1 = rf(ctx, id, r)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -56,14 +56,14 @@ type MockServerOperations_BuildServer_Call struct {
 }
 
 // BuildServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
 //   - r *gona.BuildServerRequest
-func (_e *MockServerOperations_Expecter) BuildServer(_a0 interface{}, id interface{}, r interface{}) *MockServerOperations_BuildServer_Call {
-	return &MockServerOperations_BuildServer_Call{Call: _e.mock.On("BuildServer", _a0, id, r)}
+func (_e *MockServerOperations_Expecter) BuildServer(ctx interface{}, id interface{}, r interface{}) *MockServerOperations_BuildServer_Call {
+	return &MockServerOperations_BuildServer_Call{Call: _e.mock.On("BuildServer", ctx, id, r)}
 }
 
-func (_c *MockServerOperations_BuildServer_Call) Run(run func(_a0 context.Context, id int, r *gona.BuildServerRequest)) *MockServerOperations_BuildServer_Call {
+func (_c *MockServerOperations_BuildServer_Call) Run(run func(ctx context.Context, id int, r *gona.BuildServerRequest)) *MockServerOperations_BuildServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int), args[2].(*gona.BuildServerRequest))
 	})
@@ -80,9 +80,9 @@ func (_c *MockServerOperations_BuildServer_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// CreateServer provides a mock function with given fields: _a0, _a1
-func (_m *MockServerOperations) CreateServer(_a0 context.Context, _a1 *gona.CreateServerRequest) (gona.ServerBuild, error) {
-	ret := _m.Called(_a0, _a1)
+// CreateServer provides a mock function with given fields: ctx, r
+func (_m *MockServerOperations) CreateServer(ctx context.Context, r *gona.CreateServerRequest) (gona.ServerBuild, error) {
+	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateServer")
@@ -91,16 +91,16 @@ func (_m *MockServerOperations) CreateServer(_a0 context.Context, _a1 *gona.Crea
 	var r0 gona.ServerBuild
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, *gona.CreateServerRequest) (gona.ServerBuild, error)); ok {
-		return rf(_a0, _a1)
+		return rf(ctx, r)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, *gona.CreateServerRequest) gona.ServerBuild); ok {
-		r0 = rf(_a0, _a1)
+		r0 = rf(ctx, r)
 	} else {
 		r0 = ret.Get(0).(gona.ServerBuild)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, *gona.CreateServerRequest) error); ok {
-		r1 = rf(_a0, _a1)
+		r1 = rf(ctx, r)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -114,13 +114,13 @@ type MockServerOperations_CreateServer_Call struct {
 }
 
 // CreateServer is a helper method to define mock.On call
-//   - _a0 context.Context
-//   - _a1 *gona.CreateServerRequest
-func (_e *MockServerOperations_Expecter) CreateServer(_a0 interface{}, _a1 interface{}) *MockServerOperations_CreateServer_Call {
-	return &MockServerOperations_CreateServer_Call{Call: _e.mock.On("CreateServer", _a0, _a1)}
+//   - ctx context.Context
+//   - r *gona.CreateServerRequest
+func (_e *MockServerOperations_Expecter) CreateServer(ctx interface{}, r interface{}) *MockServerOperations_CreateServer_Call {
+	return &MockServerOperations_CreateServer_Call{Call: _e.mock.On("CreateServer", ctx, r)}
 }
 
-func (_c *MockServerOperations_CreateServer_Call) Run(run func(_a0 context.Context, _a1 *gona.CreateServerRequest)) *MockServerOperations_CreateServer_Call {
+func (_c *MockServerOperations_CreateServer_Call) Run(run func(ctx context.Context, r *gona.CreateServerRequest)) *MockServerOperations_CreateServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(*gona.CreateServerRequest))
 	})
@@ -137,9 +137,9 @@ func (_c *MockServerOperations_CreateServer_Call) RunAndReturn(run func(context.
 	return _c
 }
 
-// DeleteServer provides a mock function with given fields: _a0, id, cancelBilling
-func (_m *MockServerOperations) DeleteServer(_a0 context.Context, id int, cancelBilling bool) error {
-	ret := _m.Called(_a0, id, cancelBilling)
+// DeleteServer provides a mock function with given fields: ctx, id, cancelBilling
+func (_m *MockServerOperations) DeleteServer(ctx context.Context, id int, cancelBilling bool) error {
+	ret := _m.Called(ctx, id, cancelBilling)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteServer")
@@ -147,7 +147,7 @@ func (_m *MockServerOperations) DeleteServer(_a0 context.Context, id int, cancel
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, int, bool) error); ok {
-		r0 = rf(_a0, id, cancelBilling)
+		r0 = rf(ctx, id, cancelBilling)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -161,14 +161,14 @@ type MockServerOperations_DeleteServer_Call struct {
 }
 
 // DeleteServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
 //   - cancelBilling bool
-func (_e *MockServerOperations_Expecter) DeleteServer(_a0 interface{}, id interface{}, cancelBilling interface{}) *MockServerOperations_DeleteServer_Call {
-	return &MockServerOperations_DeleteServer_Call{Call: _e.mock.On("DeleteServer", _a0, id, cancelBilling)}
+func (_e *MockServerOperations_Expecter) DeleteServer(ctx interface{}, id interface{}, cancelBilling interface{}) *MockServerOperations_DeleteServer_Call {
+	return &MockServerOperations_DeleteServer_Call{Call: _e.mock.On("DeleteServer", ctx, id, cancelBilling)}
 }
 
-func (_c *MockServerOperations_DeleteServer_Call) Run(run func(_a0 context.Context, id int, cancelBilling bool)) *MockServerOperations_DeleteServer_Call {
+func (_c *MockServerOperations_DeleteServer_Call) Run(run func(ctx context.Context, id int, cancelBilling bool)) *MockServerOperations_DeleteServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int), args[2].(bool))
 	})
@@ -185,9 +185,9 @@ func (_c *MockServerOperations_DeleteServer_Call) RunAndReturn(run func(context.
 	return _c
 }
 
-// GetServer provides a mock function with given fields: _a0, id
-func (_m *MockServerOperations) GetServer(_a0 context.Context, id int) (gona.Server, error) {
-	ret := _m.Called(_a0, id)
+// GetServer provides a mock function with given fields: ctx, id
+func (_m *MockServerOperations) GetServer(ctx context.Context, id int) (gona.Server, error) {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetServer")
@@ -196,16 +196,16 @@ func (_m *MockServerOperations) GetServer(_a0 context.Context, id int) (gona.Ser
 	var r0 gona.Server
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) (gona.Server, error)); ok {
-		return rf(_a0, id)
+		return rf(ctx, id)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) gona.Server); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(gona.Server)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, id)
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -219,13 +219,13 @@ type MockServerOperations_GetServer_Call struct {
 }
 
 // GetServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockServerOperations_Expecter) GetServer(_a0 interface{}, id interface{}) *MockServerOperations_GetServer_Call {
-	return &MockServerOperations_GetServer_Call{Call: _e.mock.On("GetServer", _a0, id)}
+func (_e *MockServerOperations_Expecter) GetServer(ctx interface{}, id interface{}) *MockServerOperations_GetServer_Call {
+	return &MockServerOperations_GetServer_Call{Call: _e.mock.On("GetServer", ctx, id)}
 }
 
-func (_c *MockServerOperations_GetServer_Call) Run(run func(_a0 context.Context, id int)) *MockServerOperations_GetServer_Call {
+func (_c *MockServerOperations_GetServer_Call) Run(run func(ctx context.Context, id int)) *MockServerOperations_GetServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
@@ -242,9 +242,9 @@ func (_c *MockServerOperations_GetServer_Call) RunAndReturn(run func(context.Con
 	return _c
 }
 
-// UnlinkServer provides a mock function with given fields: _a0, id
-func (_m *MockServerOperations) UnlinkServer(_a0 context.Context, id int) error {
-	ret := _m.Called(_a0, id)
+// UnlinkServer provides a mock function with given fields: ctx, id
+func (_m *MockServerOperations) UnlinkServer(ctx context.Context, id int) error {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UnlinkServer")
@@ -252,7 +252,7 @@ func (_m *MockServerOperations) UnlinkServer(_a0 context.Context, id int) error 
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) error); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -266,13 +266,13 @@ type MockServerOperations_UnlinkServer_Call struct {
 }
 
 // UnlinkServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockServerOperations_Expecter) UnlinkServer(_a0 interface{}, id interface{}) *MockServerOperations_UnlinkServer_Call {
-	return &MockServerOperations_UnlinkServer_Call{Call: _e.mock.On("UnlinkServer", _a0, id)}
+func (_e *MockServerOperations_Expecter) UnlinkServer(ctx interface{}, id interface{}) *MockServerOperations_UnlinkServer_Call {
+	return &MockServerOperations_UnlinkServer_Call{Call: _e.mock.On("UnlinkServer", ctx, id)}
 }
 
-func (_c *MockServerOperations_UnlinkServer_Call) Run(run func(_a0 context.Context, id int)) *MockServerOperations_UnlinkServer_Call {
+func (_c *MockServerOperations_UnlinkServer_Call) Run(run func(ctx context.Context, id int)) *MockServerOperations_UnlinkServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})

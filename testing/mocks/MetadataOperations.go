@@ -22,9 +22,9 @@ func (_m *MockMetadataOperations) EXPECT() *MockMetadataOperations_Expecter {
 	return &MockMetadataOperations_Expecter{mock: &_m.Mock}
 }
 
-// GetLocations provides a mock function with given fields: _a0
-func (_m *MockMetadataOperations) GetLocations(_a0 context.Context) ([]gona.Location, error) {
-	ret := _m.Called(_a0)
+// GetLocations provides a mock function with given fields: ctx
+func (_m *MockMetadataOperations) GetLocations(ctx context.Context) ([]gona.Location, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetLocations")
@@ -33,10 +33,10 @@ func (_m *MockMetadataOperations) GetLocations(_a0 context.Context) ([]gona.Loca
 	var r0 []gona.Location
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context) ([]gona.Location, error)); ok {
-		return rf(_a0)
+		return rf(ctx)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context) []gona.Location); ok {
-		r0 = rf(_a0)
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]gona.Location)
@@ -44,7 +44,7 @@ func (_m *MockMetadataOperations) GetLocations(_a0 context.Context) ([]gona.Loca
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(_a0)
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -58,12 +58,12 @@ type MockMetadataOperations_GetLocations_Call struct {
 }
 
 // GetLocations is a helper method to define mock.On call
-//   - _a0 context.Context
-func (_e *MockMetadataOperations_Expecter) GetLocations(_a0 interface{}) *MockMetadataOperations_GetLocations_Call {
-	return &MockMetadataOperations_GetLocations_Call{Call: _e.mock.On("GetLocations", _a0)}
+//   - ctx context.Context
+func (_e *MockMetadataOperations_Expecter) GetLocations(ctx interface{}) *MockMetadataOperations_GetLocations_Call {
+	return &MockMetadataOperations_GetLocations_Call{Call: _e.mock.On("GetLocations", ctx)}
 }
 
-func (_c *MockMetadataOperations_GetLocations_Call) Run(run func(_a0 context.Context)) *MockMetadataOperations_GetLocations_Call {
+func (_c *MockMetadataOperations_GetLocations_Call) Run(run func(ctx context.Context)) *MockMetadataOperations_GetLocations_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context))
 	})
@@ -80,9 +80,9 @@ func (_c *MockMetadataOperations_GetLocations_Call) RunAndReturn(run func(contex
 	return _c
 }
 
-// GetOSs provides a mock function with given fields: _a0
-func (_m *MockMetadataOperations) GetOSs(_a0 context.Context) ([]gona.OS, error) {
-	ret := _m.Called(_a0)
+// GetOSs provides a mock function with given fields: ctx
+func (_m *MockMetadataOperations) GetOSs(ctx context.Context) ([]gona.OS, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOSs")
@@ -91,10 +91,10 @@ func (_m *MockMetadataOperations) GetOSs(_a0 context.Context) ([]gona.OS, error)
 	var r0 []gona.OS
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context) ([]gona.OS, error)); ok {
-		return rf(_a0)
+		return rf(ctx)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context) []gona.OS); ok {
-		r0 = rf(_a0)
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]gona.OS)
@@ -102,7 +102,7 @@ func (_m *MockMetadataOperations) GetOSs(_a0 context.Context) ([]gona.OS, error)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(_a0)
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -116,12 +116,12 @@ type MockMetadataOperations_GetOSs_Call struct {
 }
 
 // GetOSs is a helper method to define mock.On call
-//   - _a0 context.Context
-func (_e *MockMetadataOperations_Expecter) GetOSs(_a0 interface{}) *MockMetadataOperations_GetOSs_Call {
-	return &MockMetadataOperations_GetOSs_Call{Call: _e.mock.On("GetOSs", _a0)}
+//   - ctx context.Context
+func (_e *MockMetadataOperations_Expecter) GetOSs(ctx interface{}) *MockMetadataOperations_GetOSs_Call {
+	return &MockMetadataOperations_GetOSs_Call{Call: _e.mock.On("GetOSs", ctx)}
 }
 
-func (_c *MockMetadataOperations_GetOSs_Call) Run(run func(_a0 context.Context)) *MockMetadataOperations_GetOSs_Call {
+func (_c *MockMetadataOperations_GetOSs_Call) Run(run func(ctx context.Context)) *MockMetadataOperations_GetOSs_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context))
 	})

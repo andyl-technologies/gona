@@ -22,9 +22,9 @@ func (_m *MockSSHKeyOperations) EXPECT() *MockSSHKeyOperations_Expecter {
 	return &MockSSHKeyOperations_Expecter{mock: &_m.Mock}
 }
 
-// CreateSSHKey provides a mock function with given fields: _a0, name, key
-func (_m *MockSSHKeyOperations) CreateSSHKey(_a0 context.Context, name string, key string) (gona.SSHKey, error) {
-	ret := _m.Called(_a0, name, key)
+// CreateSSHKey provides a mock function with given fields: ctx, name, key
+func (_m *MockSSHKeyOperations) CreateSSHKey(ctx context.Context, name string, key string) (gona.SSHKey, error) {
+	ret := _m.Called(ctx, name, key)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateSSHKey")
@@ -33,16 +33,16 @@ func (_m *MockSSHKeyOperations) CreateSSHKey(_a0 context.Context, name string, k
 	var r0 gona.SSHKey
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) (gona.SSHKey, error)); ok {
-		return rf(_a0, name, key)
+		return rf(ctx, name, key)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) gona.SSHKey); ok {
-		r0 = rf(_a0, name, key)
+		r0 = rf(ctx, name, key)
 	} else {
 		r0 = ret.Get(0).(gona.SSHKey)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(_a0, name, key)
+		r1 = rf(ctx, name, key)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -56,14 +56,14 @@ type MockSSHKeyOperations_CreateSSHKey_Call struct {
 }
 
 // CreateSSHKey is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - name string
 //   - key string
-func (_e *MockSSHKeyOperations_Expecter) CreateSSHKey(_a0 interface{}, name interface{}, key interface{}) *MockSSHKeyOperations_CreateSSHKey_Call {
-	return &MockSSHKeyOperations_CreateSSHKey_Call{Call: _e.mock.On("CreateSSHKey", _a0, name, key)}
+func (_e *MockSSHKeyOperations_Expecter) CreateSSHKey(ctx interface{}, name interface{}, key interface{}) *MockSSHKeyOperations_CreateSSHKey_Call {
+	return &MockSSHKeyOperations_CreateSSHKey_Call{Call: _e.mock.On("CreateSSHKey", ctx, name, key)}
 }
 
-func (_c *MockSSHKeyOperations_CreateSSHKey_Call) Run(run func(_a0 context.Context, name string, key string)) *MockSSHKeyOperations_CreateSSHKey_Call {
+func (_c *MockSSHKeyOperations_CreateSSHKey_Call) Run(run func(ctx context.Context, name string, key string)) *MockSSHKeyOperations_CreateSSHKey_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(string), args[2].(string))
 	})
@@ -80,9 +80,9 @@ func (_c *MockSSHKeyOperations_CreateSSHKey_Call) RunAndReturn(run func(context.
 	return _c
 }
 
-// DeleteSSHKey provides a mock function with given fields: _a0, id
-func (_m *MockSSHKeyOperations) DeleteSSHKey(_a0 context.Context, id int) error {
-	ret := _m.Called(_a0, id)
+// DeleteSSHKey provides a mock function with given fields: ctx, id
+func (_m *MockSSHKeyOperations) DeleteSSHKey(ctx context.Context, id int) error {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteSSHKey")
@@ -90,7 +90,7 @@ func (_m *MockSSHKeyOperations) DeleteSSHKey(_a0 context.Context, id int) error 
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) error); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -104,13 +104,13 @@ type MockSSHKeyOperations_DeleteSSHKey_Call struct {
 }
 
 // DeleteSSHKey is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockSSHKeyOperations_Expecter) DeleteSSHKey(_a0 interface{}, id interface{}) *MockSSHKeyOperations_DeleteSSHKey_Call {
-	return &MockSSHKeyOperations_DeleteSSHKey_Call{Call: _e.mock.On("DeleteSSHKey", _a0, id)}
+func (_e *MockSSHKeyOperations_Expecter) DeleteSSHKey(ctx interface{}, id interface{}) *MockSSHKeyOperations_DeleteSSHKey_Call {
+	return &MockSSHKeyOperations_DeleteSSHKey_Call{Call: _e.mock.On("DeleteSSHKey", ctx, id)}
 }
 
-func (_c *MockSSHKeyOperations_DeleteSSHKey_Call) Run(run func(_a0 context.Context, id int)) *MockSSHKeyOperations_DeleteSSHKey_Call {
+func (_c *MockSSHKeyOperations_DeleteSSHKey_Call) Run(run func(ctx context.Context, id int)) *MockSSHKeyOperations_DeleteSSHKey_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
@@ -127,9 +127,9 @@ func (_c *MockSSHKeyOperations_DeleteSSHKey_Call) RunAndReturn(run func(context.
 	return _c
 }
 
-// GetSSHKey provides a mock function with given fields: _a0, id
-func (_m *MockSSHKeyOperations) GetSSHKey(_a0 context.Context, id int) (gona.SSHKey, error) {
-	ret := _m.Called(_a0, id)
+// GetSSHKey provides a mock function with given fields: ctx, id
+func (_m *MockSSHKeyOperations) GetSSHKey(ctx context.Context, id int) (gona.SSHKey, error) {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetSSHKey")
@@ -138,16 +138,16 @@ func (_m *MockSSHKeyOperations) GetSSHKey(_a0 context.Context, id int) (gona.SSH
 	var r0 gona.SSHKey
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) (gona.SSHKey, error)); ok {
-		return rf(_a0, id)
+		return rf(ctx, id)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) gona.SSHKey); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(gona.SSHKey)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, id)
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -161,13 +161,13 @@ type MockSSHKeyOperations_GetSSHKey_Call struct {
 }
 
 // GetSSHKey is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockSSHKeyOperations_Expecter) GetSSHKey(_a0 interface{}, id interface{}) *MockSSHKeyOperations_GetSSHKey_Call {
-	return &MockSSHKeyOperations_GetSSHKey_Call{Call: _e.mock.On("GetSSHKey", _a0, id)}
+func (_e *MockSSHKeyOperations_Expecter) GetSSHKey(ctx interface{}, id interface{}) *MockSSHKeyOperations_GetSSHKey_Call {
+	return &MockSSHKeyOperations_GetSSHKey_Call{Call: _e.mock.On("GetSSHKey", ctx, id)}
 }
 
-func (_c *MockSSHKeyOperations_GetSSHKey_Call) Run(run func(_a0 context.Context, id int)) *MockSSHKeyOperations_GetSSHKey_Call {
+func (_c *MockSSHKeyOperations_GetSSHKey_Call) Run(run func(ctx context.Context, id int)) *MockSSHKeyOperations_GetSSHKey_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})

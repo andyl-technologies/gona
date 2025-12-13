@@ -52,7 +52,12 @@ type FakeClient struct {
 	}
 }
 
-// NewFakeClient creates a new FakeClient with default test data
+// NewFakeClient creates a new FakeClient with default test data.
+//
+// Default IPs use RFC-reserved documentation ranges that will never
+// appear in production:
+//   - IPv4: 192.0.2.0/24 (RFC 5737 TEST-NET-1)
+//   - IPv6: 2001:db8::/32 (RFC 3849)
 func NewFakeClient() *FakeClient {
 	return &FakeClient{
 		servers:          make(map[int]gona.Server),
@@ -80,6 +85,17 @@ func (f *FakeClient) CreateServer(ctx context.Context, r *gona.CreateServerReque
 	f.trackCall("CreateServer")
 	if f.CreateServerError != nil {
 		return gona.ServerBuild{}, f.CreateServerError
+	}
+
+	// Validate request
+	if r == nil {
+		return gona.ServerBuild{}, fmt.Errorf("CreateServerRequest cannot be nil")
+	}
+	if r.Plan == "" {
+		return gona.ServerBuild{}, fmt.Errorf("Plan is required")
+	}
+	if r.Location <= 0 {
+		return gona.ServerBuild{}, fmt.Errorf("invalid Location ID: %d", r.Location)
 	}
 
 	f.mu.Lock()
@@ -152,6 +168,14 @@ func (f *FakeClient) BuildServer(ctx context.Context, id int, r *gona.BuildServe
 	f.trackCall(fmt.Sprintf("BuildServer(%d)", id))
 	if f.BuildServerError != nil {
 		return gona.ServerBuild{}, f.BuildServerError
+	}
+
+	// Validate parameters
+	if id <= 0 {
+		return gona.ServerBuild{}, fmt.Errorf("invalid server ID: %d", id)
+	}
+	if r == nil {
+		return gona.ServerBuild{}, fmt.Errorf("BuildServerRequest cannot be nil")
 	}
 
 	f.mu.Lock()
@@ -238,6 +262,11 @@ func (f *FakeClient) CreateSSHKey(ctx context.Context, name, key string) (gona.S
 		return gona.SSHKey{}, f.CreateSSHKeyError
 	}
 
+	// Validate parameters
+	if name == "" {
+		return gona.SSHKey{}, fmt.Errorf("SSH key name cannot be empty")
+	}
+
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -296,6 +325,14 @@ func (f *FakeClient) CreateBGPSessions(ctx context.Context, mbPkgID int, groupID
 	f.trackCall(fmt.Sprintf("CreateBGPSessions(%d, %d, %v, %v)", mbPkgID, groupID, isIPV6, redundant))
 	if f.CreateBGPSessionsError != nil {
 		return nil, f.CreateBGPSessionsError
+	}
+
+	// Validate parameters
+	if mbPkgID <= 0 {
+		return nil, fmt.Errorf("invalid mbPkgID: %d", mbPkgID)
+	}
+	if groupID <= 0 {
+		return nil, fmt.Errorf("invalid groupID: %d", groupID)
 	}
 
 	f.mu.Lock()
@@ -468,4 +505,52 @@ func (f *FakeClient) ResetCalls() {
 	f.calltrack.Lock()
 	defer f.calltrack.Unlock()
 	f.calltrack.calls = nil
+}
+
+// Reset clears all state from the FakeClient, returning it to a fresh state.
+// This is useful for reusing a FakeClient instance across multiple tests.
+func (f *FakeClient) Reset() {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	// Clear all state maps
+	f.servers = make(map[int]gona.Server)
+	f.sshKeys = make(map[int]gona.SSHKey)
+	f.bgpSessions = make(map[int][]*gona.BGPSession)
+	f.ips = make(map[int]gona.IPs)
+
+	// Reset counters to initial values
+	f.nextServerID = 1000
+	f.nextSSHKeyID = 100
+	f.nextBGPSessionID = 500
+
+	// Clear all error fields
+	f.CreateServerError = nil
+	f.GetServerError = nil
+	f.BuildServerError = nil
+	f.DeleteServerError = nil
+	f.UnlinkServerError = nil
+	f.CreateSSHKeyError = nil
+	f.GetSSHKeyError = nil
+	f.DeleteSSHKeyError = nil
+	f.CreateBGPSessionsError = nil
+	f.GetBGPSessionsError = nil
+	f.GetIPsError = nil
+	f.GetLocationsError = nil
+	f.GetOSsError = nil
+
+	// Restore default locations and OSes
+	f.locations = []gona.Location{
+		{ID: 1, Name: "AMS Amsterdam", IATACode: "AMS", Continent: "EU"},
+		{ID: 2, Name: "LAX Los Angeles", IATACode: "LAX", Continent: "NA"},
+		{ID: 3, Name: "SJC San Jose", IATACode: "SJC", Continent: "NA"},
+	}
+	f.oses = []gona.OS{
+		{ID: 1, Os: "Ubuntu 22.04 LTS", Type: "linux", Bits: "64"},
+		{ID: 2, Os: "Debian 12", Type: "linux", Bits: "64"},
+		{ID: 3, Os: "Rocky Linux 9", Type: "linux", Bits: "64"},
+	}
+
+	// Also reset call tracking
+	f.ResetCalls()
 }

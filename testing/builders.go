@@ -19,7 +19,11 @@ type ServerBuilder struct {
 	server gona.Server
 }
 
-// NewServerBuilder creates a new ServerBuilder with sensible defaults
+// NewServerBuilder creates a new ServerBuilder with sensible defaults.
+//
+// Default IPs use RFC-reserved documentation ranges:
+//   - IPv4: 192.0.2.0/24 (RFC 5737 TEST-NET-1)
+//   - IPv6: 2001:db8::/32 (RFC 3849)
 func NewServerBuilder() *ServerBuilder {
 	return &ServerBuilder{
 		server: gona.Server{
