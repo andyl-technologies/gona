@@ -22,9 +22,9 @@ func (_m *MockBGPSessionOperations) EXPECT() *MockBGPSessionOperations_Expecter 
 	return &MockBGPSessionOperations_Expecter{mock: &_m.Mock}
 }
 
-// CreateBGPSessions provides a mock function with given fields: _a0, mbPkgID, groupID, isIPV6, redundant
-func (_m *MockBGPSessionOperations) CreateBGPSessions(_a0 context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool) (*gona.BGPSession, error) {
-	ret := _m.Called(_a0, mbPkgID, groupID, isIPV6, redundant)
+// CreateBGPSessions provides a mock function with given fields: ctx, mbPkgID, groupID, isIPV6, redundant
+func (_m *MockBGPSessionOperations) CreateBGPSessions(ctx context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool) (*gona.BGPSession, error) {
+	ret := _m.Called(ctx, mbPkgID, groupID, isIPV6, redundant)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBGPSessions")
@@ -33,10 +33,10 @@ func (_m *MockBGPSessionOperations) CreateBGPSessions(_a0 context.Context, mbPkg
 	var r0 *gona.BGPSession
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int, int, bool, bool) (*gona.BGPSession, error)); ok {
-		return rf(_a0, mbPkgID, groupID, isIPV6, redundant)
+		return rf(ctx, mbPkgID, groupID, isIPV6, redundant)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int, int, bool, bool) *gona.BGPSession); ok {
-		r0 = rf(_a0, mbPkgID, groupID, isIPV6, redundant)
+		r0 = rf(ctx, mbPkgID, groupID, isIPV6, redundant)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*gona.BGPSession)
@@ -44,7 +44,7 @@ func (_m *MockBGPSessionOperations) CreateBGPSessions(_a0 context.Context, mbPkg
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int, int, bool, bool) error); ok {
-		r1 = rf(_a0, mbPkgID, groupID, isIPV6, redundant)
+		r1 = rf(ctx, mbPkgID, groupID, isIPV6, redundant)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -58,16 +58,16 @@ type MockBGPSessionOperations_CreateBGPSessions_Call struct {
 }
 
 // CreateBGPSessions is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - mbPkgID int
 //   - groupID int
 //   - isIPV6 bool
 //   - redundant bool
-func (_e *MockBGPSessionOperations_Expecter) CreateBGPSessions(_a0 interface{}, mbPkgID interface{}, groupID interface{}, isIPV6 interface{}, redundant interface{}) *MockBGPSessionOperations_CreateBGPSessions_Call {
-	return &MockBGPSessionOperations_CreateBGPSessions_Call{Call: _e.mock.On("CreateBGPSessions", _a0, mbPkgID, groupID, isIPV6, redundant)}
+func (_e *MockBGPSessionOperations_Expecter) CreateBGPSessions(ctx interface{}, mbPkgID interface{}, groupID interface{}, isIPV6 interface{}, redundant interface{}) *MockBGPSessionOperations_CreateBGPSessions_Call {
+	return &MockBGPSessionOperations_CreateBGPSessions_Call{Call: _e.mock.On("CreateBGPSessions", ctx, mbPkgID, groupID, isIPV6, redundant)}
 }
 
-func (_c *MockBGPSessionOperations_CreateBGPSessions_Call) Run(run func(_a0 context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool)) *MockBGPSessionOperations_CreateBGPSessions_Call {
+func (_c *MockBGPSessionOperations_CreateBGPSessions_Call) Run(run func(ctx context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool)) *MockBGPSessionOperations_CreateBGPSessions_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int), args[2].(int), args[3].(bool), args[4].(bool))
 	})
@@ -84,9 +84,9 @@ func (_c *MockBGPSessionOperations_CreateBGPSessions_Call) RunAndReturn(run func
 	return _c
 }
 
-// GetBGPSessions provides a mock function with given fields: _a0, mbPkgID
-func (_m *MockBGPSessionOperations) GetBGPSessions(_a0 context.Context, mbPkgID int) ([]*gona.BGPSession, error) {
-	ret := _m.Called(_a0, mbPkgID)
+// GetBGPSessions provides a mock function with given fields: ctx, mbPkgID
+func (_m *MockBGPSessionOperations) GetBGPSessions(ctx context.Context, mbPkgID int) ([]*gona.BGPSession, error) {
+	ret := _m.Called(ctx, mbPkgID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBGPSessions")
@@ -95,10 +95,10 @@ func (_m *MockBGPSessionOperations) GetBGPSessions(_a0 context.Context, mbPkgID 
 	var r0 []*gona.BGPSession
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) ([]*gona.BGPSession, error)); ok {
-		return rf(_a0, mbPkgID)
+		return rf(ctx, mbPkgID)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) []*gona.BGPSession); ok {
-		r0 = rf(_a0, mbPkgID)
+		r0 = rf(ctx, mbPkgID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*gona.BGPSession)
@@ -106,7 +106,7 @@ func (_m *MockBGPSessionOperations) GetBGPSessions(_a0 context.Context, mbPkgID 
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, mbPkgID)
+		r1 = rf(ctx, mbPkgID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -120,13 +120,13 @@ type MockBGPSessionOperations_GetBGPSessions_Call struct {
 }
 
 // GetBGPSessions is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - mbPkgID int
-func (_e *MockBGPSessionOperations_Expecter) GetBGPSessions(_a0 interface{}, mbPkgID interface{}) *MockBGPSessionOperations_GetBGPSessions_Call {
-	return &MockBGPSessionOperations_GetBGPSessions_Call{Call: _e.mock.On("GetBGPSessions", _a0, mbPkgID)}
+func (_e *MockBGPSessionOperations_Expecter) GetBGPSessions(ctx interface{}, mbPkgID interface{}) *MockBGPSessionOperations_GetBGPSessions_Call {
+	return &MockBGPSessionOperations_GetBGPSessions_Call{Call: _e.mock.On("GetBGPSessions", ctx, mbPkgID)}
 }
 
-func (_c *MockBGPSessionOperations_GetBGPSessions_Call) Run(run func(_a0 context.Context, mbPkgID int)) *MockBGPSessionOperations_GetBGPSessions_Call {
+func (_c *MockBGPSessionOperations_GetBGPSessions_Call) Run(run func(ctx context.Context, mbPkgID int)) *MockBGPSessionOperations_GetBGPSessions_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})

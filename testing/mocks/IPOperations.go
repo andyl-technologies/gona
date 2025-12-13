@@ -22,9 +22,9 @@ func (_m *MockIPOperations) EXPECT() *MockIPOperations_Expecter {
 	return &MockIPOperations_Expecter{mock: &_m.Mock}
 }
 
-// GetIPs provides a mock function with given fields: _a0, mbPkgID
-func (_m *MockIPOperations) GetIPs(_a0 context.Context, mbPkgID int) (gona.IPs, error) {
-	ret := _m.Called(_a0, mbPkgID)
+// GetIPs provides a mock function with given fields: ctx, mbPkgID
+func (_m *MockIPOperations) GetIPs(ctx context.Context, mbPkgID int) (gona.IPs, error) {
+	ret := _m.Called(ctx, mbPkgID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetIPs")
@@ -33,16 +33,16 @@ func (_m *MockIPOperations) GetIPs(_a0 context.Context, mbPkgID int) (gona.IPs, 
 	var r0 gona.IPs
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) (gona.IPs, error)); ok {
-		return rf(_a0, mbPkgID)
+		return rf(ctx, mbPkgID)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) gona.IPs); ok {
-		r0 = rf(_a0, mbPkgID)
+		r0 = rf(ctx, mbPkgID)
 	} else {
 		r0 = ret.Get(0).(gona.IPs)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, mbPkgID)
+		r1 = rf(ctx, mbPkgID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -56,13 +56,13 @@ type MockIPOperations_GetIPs_Call struct {
 }
 
 // GetIPs is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - mbPkgID int
-func (_e *MockIPOperations_Expecter) GetIPs(_a0 interface{}, mbPkgID interface{}) *MockIPOperations_GetIPs_Call {
-	return &MockIPOperations_GetIPs_Call{Call: _e.mock.On("GetIPs", _a0, mbPkgID)}
+func (_e *MockIPOperations_Expecter) GetIPs(ctx interface{}, mbPkgID interface{}) *MockIPOperations_GetIPs_Call {
+	return &MockIPOperations_GetIPs_Call{Call: _e.mock.On("GetIPs", ctx, mbPkgID)}
 }
 
-func (_c *MockIPOperations_GetIPs_Call) Run(run func(_a0 context.Context, mbPkgID int)) *MockIPOperations_GetIPs_Call {
+func (_c *MockIPOperations_GetIPs_Call) Run(run func(ctx context.Context, mbPkgID int)) *MockIPOperations_GetIPs_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})

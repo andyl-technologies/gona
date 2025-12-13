@@ -22,9 +22,9 @@ func (_m *MockClientInterface) EXPECT() *MockClientInterface_Expecter {
 	return &MockClientInterface_Expecter{mock: &_m.Mock}
 }
 
-// BuildServer provides a mock function with given fields: _a0, id, r
-func (_m *MockClientInterface) BuildServer(_a0 context.Context, id int, r *gona.BuildServerRequest) (gona.ServerBuild, error) {
-	ret := _m.Called(_a0, id, r)
+// BuildServer provides a mock function with given fields: ctx, id, r
+func (_m *MockClientInterface) BuildServer(ctx context.Context, id int, r *gona.BuildServerRequest) (gona.ServerBuild, error) {
+	ret := _m.Called(ctx, id, r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for BuildServer")
@@ -33,16 +33,16 @@ func (_m *MockClientInterface) BuildServer(_a0 context.Context, id int, r *gona.
 	var r0 gona.ServerBuild
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int, *gona.BuildServerRequest) (gona.ServerBuild, error)); ok {
-		return rf(_a0, id, r)
+		return rf(ctx, id, r)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int, *gona.BuildServerRequest) gona.ServerBuild); ok {
-		r0 = rf(_a0, id, r)
+		r0 = rf(ctx, id, r)
 	} else {
 		r0 = ret.Get(0).(gona.ServerBuild)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int, *gona.BuildServerRequest) error); ok {
-		r1 = rf(_a0, id, r)
+		r1 = rf(ctx, id, r)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -56,14 +56,14 @@ type MockClientInterface_BuildServer_Call struct {
 }
 
 // BuildServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
 //   - r *gona.BuildServerRequest
-func (_e *MockClientInterface_Expecter) BuildServer(_a0 interface{}, id interface{}, r interface{}) *MockClientInterface_BuildServer_Call {
-	return &MockClientInterface_BuildServer_Call{Call: _e.mock.On("BuildServer", _a0, id, r)}
+func (_e *MockClientInterface_Expecter) BuildServer(ctx interface{}, id interface{}, r interface{}) *MockClientInterface_BuildServer_Call {
+	return &MockClientInterface_BuildServer_Call{Call: _e.mock.On("BuildServer", ctx, id, r)}
 }
 
-func (_c *MockClientInterface_BuildServer_Call) Run(run func(_a0 context.Context, id int, r *gona.BuildServerRequest)) *MockClientInterface_BuildServer_Call {
+func (_c *MockClientInterface_BuildServer_Call) Run(run func(ctx context.Context, id int, r *gona.BuildServerRequest)) *MockClientInterface_BuildServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int), args[2].(*gona.BuildServerRequest))
 	})
@@ -80,9 +80,9 @@ func (_c *MockClientInterface_BuildServer_Call) RunAndReturn(run func(context.Co
 	return _c
 }
 
-// CreateBGPSessions provides a mock function with given fields: _a0, mbPkgID, groupID, isIPV6, redundant
-func (_m *MockClientInterface) CreateBGPSessions(_a0 context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool) (*gona.BGPSession, error) {
-	ret := _m.Called(_a0, mbPkgID, groupID, isIPV6, redundant)
+// CreateBGPSessions provides a mock function with given fields: ctx, mbPkgID, groupID, isIPV6, redundant
+func (_m *MockClientInterface) CreateBGPSessions(ctx context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool) (*gona.BGPSession, error) {
+	ret := _m.Called(ctx, mbPkgID, groupID, isIPV6, redundant)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBGPSessions")
@@ -91,10 +91,10 @@ func (_m *MockClientInterface) CreateBGPSessions(_a0 context.Context, mbPkgID in
 	var r0 *gona.BGPSession
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int, int, bool, bool) (*gona.BGPSession, error)); ok {
-		return rf(_a0, mbPkgID, groupID, isIPV6, redundant)
+		return rf(ctx, mbPkgID, groupID, isIPV6, redundant)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int, int, bool, bool) *gona.BGPSession); ok {
-		r0 = rf(_a0, mbPkgID, groupID, isIPV6, redundant)
+		r0 = rf(ctx, mbPkgID, groupID, isIPV6, redundant)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*gona.BGPSession)
@@ -102,7 +102,7 @@ func (_m *MockClientInterface) CreateBGPSessions(_a0 context.Context, mbPkgID in
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int, int, bool, bool) error); ok {
-		r1 = rf(_a0, mbPkgID, groupID, isIPV6, redundant)
+		r1 = rf(ctx, mbPkgID, groupID, isIPV6, redundant)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -116,16 +116,16 @@ type MockClientInterface_CreateBGPSessions_Call struct {
 }
 
 // CreateBGPSessions is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - mbPkgID int
 //   - groupID int
 //   - isIPV6 bool
 //   - redundant bool
-func (_e *MockClientInterface_Expecter) CreateBGPSessions(_a0 interface{}, mbPkgID interface{}, groupID interface{}, isIPV6 interface{}, redundant interface{}) *MockClientInterface_CreateBGPSessions_Call {
-	return &MockClientInterface_CreateBGPSessions_Call{Call: _e.mock.On("CreateBGPSessions", _a0, mbPkgID, groupID, isIPV6, redundant)}
+func (_e *MockClientInterface_Expecter) CreateBGPSessions(ctx interface{}, mbPkgID interface{}, groupID interface{}, isIPV6 interface{}, redundant interface{}) *MockClientInterface_CreateBGPSessions_Call {
+	return &MockClientInterface_CreateBGPSessions_Call{Call: _e.mock.On("CreateBGPSessions", ctx, mbPkgID, groupID, isIPV6, redundant)}
 }
 
-func (_c *MockClientInterface_CreateBGPSessions_Call) Run(run func(_a0 context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool)) *MockClientInterface_CreateBGPSessions_Call {
+func (_c *MockClientInterface_CreateBGPSessions_Call) Run(run func(ctx context.Context, mbPkgID int, groupID int, isIPV6 bool, redundant bool)) *MockClientInterface_CreateBGPSessions_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int), args[2].(int), args[3].(bool), args[4].(bool))
 	})
@@ -142,9 +142,9 @@ func (_c *MockClientInterface_CreateBGPSessions_Call) RunAndReturn(run func(cont
 	return _c
 }
 
-// CreateSSHKey provides a mock function with given fields: _a0, name, key
-func (_m *MockClientInterface) CreateSSHKey(_a0 context.Context, name string, key string) (gona.SSHKey, error) {
-	ret := _m.Called(_a0, name, key)
+// CreateSSHKey provides a mock function with given fields: ctx, name, key
+func (_m *MockClientInterface) CreateSSHKey(ctx context.Context, name string, key string) (gona.SSHKey, error) {
+	ret := _m.Called(ctx, name, key)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateSSHKey")
@@ -153,16 +153,16 @@ func (_m *MockClientInterface) CreateSSHKey(_a0 context.Context, name string, ke
 	var r0 gona.SSHKey
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) (gona.SSHKey, error)); ok {
-		return rf(_a0, name, key)
+		return rf(ctx, name, key)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) gona.SSHKey); ok {
-		r0 = rf(_a0, name, key)
+		r0 = rf(ctx, name, key)
 	} else {
 		r0 = ret.Get(0).(gona.SSHKey)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(_a0, name, key)
+		r1 = rf(ctx, name, key)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -176,14 +176,14 @@ type MockClientInterface_CreateSSHKey_Call struct {
 }
 
 // CreateSSHKey is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - name string
 //   - key string
-func (_e *MockClientInterface_Expecter) CreateSSHKey(_a0 interface{}, name interface{}, key interface{}) *MockClientInterface_CreateSSHKey_Call {
-	return &MockClientInterface_CreateSSHKey_Call{Call: _e.mock.On("CreateSSHKey", _a0, name, key)}
+func (_e *MockClientInterface_Expecter) CreateSSHKey(ctx interface{}, name interface{}, key interface{}) *MockClientInterface_CreateSSHKey_Call {
+	return &MockClientInterface_CreateSSHKey_Call{Call: _e.mock.On("CreateSSHKey", ctx, name, key)}
 }
 
-func (_c *MockClientInterface_CreateSSHKey_Call) Run(run func(_a0 context.Context, name string, key string)) *MockClientInterface_CreateSSHKey_Call {
+func (_c *MockClientInterface_CreateSSHKey_Call) Run(run func(ctx context.Context, name string, key string)) *MockClientInterface_CreateSSHKey_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(string), args[2].(string))
 	})
@@ -200,9 +200,9 @@ func (_c *MockClientInterface_CreateSSHKey_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// CreateServer provides a mock function with given fields: _a0, _a1
-func (_m *MockClientInterface) CreateServer(_a0 context.Context, _a1 *gona.CreateServerRequest) (gona.ServerBuild, error) {
-	ret := _m.Called(_a0, _a1)
+// CreateServer provides a mock function with given fields: ctx, r
+func (_m *MockClientInterface) CreateServer(ctx context.Context, r *gona.CreateServerRequest) (gona.ServerBuild, error) {
+	ret := _m.Called(ctx, r)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateServer")
@@ -211,16 +211,16 @@ func (_m *MockClientInterface) CreateServer(_a0 context.Context, _a1 *gona.Creat
 	var r0 gona.ServerBuild
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, *gona.CreateServerRequest) (gona.ServerBuild, error)); ok {
-		return rf(_a0, _a1)
+		return rf(ctx, r)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, *gona.CreateServerRequest) gona.ServerBuild); ok {
-		r0 = rf(_a0, _a1)
+		r0 = rf(ctx, r)
 	} else {
 		r0 = ret.Get(0).(gona.ServerBuild)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, *gona.CreateServerRequest) error); ok {
-		r1 = rf(_a0, _a1)
+		r1 = rf(ctx, r)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -234,13 +234,13 @@ type MockClientInterface_CreateServer_Call struct {
 }
 
 // CreateServer is a helper method to define mock.On call
-//   - _a0 context.Context
-//   - _a1 *gona.CreateServerRequest
-func (_e *MockClientInterface_Expecter) CreateServer(_a0 interface{}, _a1 interface{}) *MockClientInterface_CreateServer_Call {
-	return &MockClientInterface_CreateServer_Call{Call: _e.mock.On("CreateServer", _a0, _a1)}
+//   - ctx context.Context
+//   - r *gona.CreateServerRequest
+func (_e *MockClientInterface_Expecter) CreateServer(ctx interface{}, r interface{}) *MockClientInterface_CreateServer_Call {
+	return &MockClientInterface_CreateServer_Call{Call: _e.mock.On("CreateServer", ctx, r)}
 }
 
-func (_c *MockClientInterface_CreateServer_Call) Run(run func(_a0 context.Context, _a1 *gona.CreateServerRequest)) *MockClientInterface_CreateServer_Call {
+func (_c *MockClientInterface_CreateServer_Call) Run(run func(ctx context.Context, r *gona.CreateServerRequest)) *MockClientInterface_CreateServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(*gona.CreateServerRequest))
 	})
@@ -257,9 +257,9 @@ func (_c *MockClientInterface_CreateServer_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// DeleteSSHKey provides a mock function with given fields: _a0, id
-func (_m *MockClientInterface) DeleteSSHKey(_a0 context.Context, id int) error {
-	ret := _m.Called(_a0, id)
+// DeleteSSHKey provides a mock function with given fields: ctx, id
+func (_m *MockClientInterface) DeleteSSHKey(ctx context.Context, id int) error {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteSSHKey")
@@ -267,7 +267,7 @@ func (_m *MockClientInterface) DeleteSSHKey(_a0 context.Context, id int) error {
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) error); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -281,13 +281,13 @@ type MockClientInterface_DeleteSSHKey_Call struct {
 }
 
 // DeleteSSHKey is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockClientInterface_Expecter) DeleteSSHKey(_a0 interface{}, id interface{}) *MockClientInterface_DeleteSSHKey_Call {
-	return &MockClientInterface_DeleteSSHKey_Call{Call: _e.mock.On("DeleteSSHKey", _a0, id)}
+func (_e *MockClientInterface_Expecter) DeleteSSHKey(ctx interface{}, id interface{}) *MockClientInterface_DeleteSSHKey_Call {
+	return &MockClientInterface_DeleteSSHKey_Call{Call: _e.mock.On("DeleteSSHKey", ctx, id)}
 }
 
-func (_c *MockClientInterface_DeleteSSHKey_Call) Run(run func(_a0 context.Context, id int)) *MockClientInterface_DeleteSSHKey_Call {
+func (_c *MockClientInterface_DeleteSSHKey_Call) Run(run func(ctx context.Context, id int)) *MockClientInterface_DeleteSSHKey_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
@@ -304,9 +304,9 @@ func (_c *MockClientInterface_DeleteSSHKey_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// DeleteServer provides a mock function with given fields: _a0, id, cancelBilling
-func (_m *MockClientInterface) DeleteServer(_a0 context.Context, id int, cancelBilling bool) error {
-	ret := _m.Called(_a0, id, cancelBilling)
+// DeleteServer provides a mock function with given fields: ctx, id, cancelBilling
+func (_m *MockClientInterface) DeleteServer(ctx context.Context, id int, cancelBilling bool) error {
+	ret := _m.Called(ctx, id, cancelBilling)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteServer")
@@ -314,7 +314,7 @@ func (_m *MockClientInterface) DeleteServer(_a0 context.Context, id int, cancelB
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, int, bool) error); ok {
-		r0 = rf(_a0, id, cancelBilling)
+		r0 = rf(ctx, id, cancelBilling)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -328,14 +328,14 @@ type MockClientInterface_DeleteServer_Call struct {
 }
 
 // DeleteServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
 //   - cancelBilling bool
-func (_e *MockClientInterface_Expecter) DeleteServer(_a0 interface{}, id interface{}, cancelBilling interface{}) *MockClientInterface_DeleteServer_Call {
-	return &MockClientInterface_DeleteServer_Call{Call: _e.mock.On("DeleteServer", _a0, id, cancelBilling)}
+func (_e *MockClientInterface_Expecter) DeleteServer(ctx interface{}, id interface{}, cancelBilling interface{}) *MockClientInterface_DeleteServer_Call {
+	return &MockClientInterface_DeleteServer_Call{Call: _e.mock.On("DeleteServer", ctx, id, cancelBilling)}
 }
 
-func (_c *MockClientInterface_DeleteServer_Call) Run(run func(_a0 context.Context, id int, cancelBilling bool)) *MockClientInterface_DeleteServer_Call {
+func (_c *MockClientInterface_DeleteServer_Call) Run(run func(ctx context.Context, id int, cancelBilling bool)) *MockClientInterface_DeleteServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int), args[2].(bool))
 	})
@@ -352,9 +352,9 @@ func (_c *MockClientInterface_DeleteServer_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// GetBGPSessions provides a mock function with given fields: _a0, mbPkgID
-func (_m *MockClientInterface) GetBGPSessions(_a0 context.Context, mbPkgID int) ([]*gona.BGPSession, error) {
-	ret := _m.Called(_a0, mbPkgID)
+// GetBGPSessions provides a mock function with given fields: ctx, mbPkgID
+func (_m *MockClientInterface) GetBGPSessions(ctx context.Context, mbPkgID int) ([]*gona.BGPSession, error) {
+	ret := _m.Called(ctx, mbPkgID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBGPSessions")
@@ -363,10 +363,10 @@ func (_m *MockClientInterface) GetBGPSessions(_a0 context.Context, mbPkgID int) 
 	var r0 []*gona.BGPSession
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) ([]*gona.BGPSession, error)); ok {
-		return rf(_a0, mbPkgID)
+		return rf(ctx, mbPkgID)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) []*gona.BGPSession); ok {
-		r0 = rf(_a0, mbPkgID)
+		r0 = rf(ctx, mbPkgID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*gona.BGPSession)
@@ -374,7 +374,7 @@ func (_m *MockClientInterface) GetBGPSessions(_a0 context.Context, mbPkgID int) 
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, mbPkgID)
+		r1 = rf(ctx, mbPkgID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -388,13 +388,13 @@ type MockClientInterface_GetBGPSessions_Call struct {
 }
 
 // GetBGPSessions is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - mbPkgID int
-func (_e *MockClientInterface_Expecter) GetBGPSessions(_a0 interface{}, mbPkgID interface{}) *MockClientInterface_GetBGPSessions_Call {
-	return &MockClientInterface_GetBGPSessions_Call{Call: _e.mock.On("GetBGPSessions", _a0, mbPkgID)}
+func (_e *MockClientInterface_Expecter) GetBGPSessions(ctx interface{}, mbPkgID interface{}) *MockClientInterface_GetBGPSessions_Call {
+	return &MockClientInterface_GetBGPSessions_Call{Call: _e.mock.On("GetBGPSessions", ctx, mbPkgID)}
 }
 
-func (_c *MockClientInterface_GetBGPSessions_Call) Run(run func(_a0 context.Context, mbPkgID int)) *MockClientInterface_GetBGPSessions_Call {
+func (_c *MockClientInterface_GetBGPSessions_Call) Run(run func(ctx context.Context, mbPkgID int)) *MockClientInterface_GetBGPSessions_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
@@ -411,9 +411,9 @@ func (_c *MockClientInterface_GetBGPSessions_Call) RunAndReturn(run func(context
 	return _c
 }
 
-// GetIPs provides a mock function with given fields: _a0, mbPkgID
-func (_m *MockClientInterface) GetIPs(_a0 context.Context, mbPkgID int) (gona.IPs, error) {
-	ret := _m.Called(_a0, mbPkgID)
+// GetIPs provides a mock function with given fields: ctx, mbPkgID
+func (_m *MockClientInterface) GetIPs(ctx context.Context, mbPkgID int) (gona.IPs, error) {
+	ret := _m.Called(ctx, mbPkgID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetIPs")
@@ -422,16 +422,16 @@ func (_m *MockClientInterface) GetIPs(_a0 context.Context, mbPkgID int) (gona.IP
 	var r0 gona.IPs
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) (gona.IPs, error)); ok {
-		return rf(_a0, mbPkgID)
+		return rf(ctx, mbPkgID)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) gona.IPs); ok {
-		r0 = rf(_a0, mbPkgID)
+		r0 = rf(ctx, mbPkgID)
 	} else {
 		r0 = ret.Get(0).(gona.IPs)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, mbPkgID)
+		r1 = rf(ctx, mbPkgID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -445,13 +445,13 @@ type MockClientInterface_GetIPs_Call struct {
 }
 
 // GetIPs is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - mbPkgID int
-func (_e *MockClientInterface_Expecter) GetIPs(_a0 interface{}, mbPkgID interface{}) *MockClientInterface_GetIPs_Call {
-	return &MockClientInterface_GetIPs_Call{Call: _e.mock.On("GetIPs", _a0, mbPkgID)}
+func (_e *MockClientInterface_Expecter) GetIPs(ctx interface{}, mbPkgID interface{}) *MockClientInterface_GetIPs_Call {
+	return &MockClientInterface_GetIPs_Call{Call: _e.mock.On("GetIPs", ctx, mbPkgID)}
 }
 
-func (_c *MockClientInterface_GetIPs_Call) Run(run func(_a0 context.Context, mbPkgID int)) *MockClientInterface_GetIPs_Call {
+func (_c *MockClientInterface_GetIPs_Call) Run(run func(ctx context.Context, mbPkgID int)) *MockClientInterface_GetIPs_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
@@ -468,9 +468,9 @@ func (_c *MockClientInterface_GetIPs_Call) RunAndReturn(run func(context.Context
 	return _c
 }
 
-// GetLocations provides a mock function with given fields: _a0
-func (_m *MockClientInterface) GetLocations(_a0 context.Context) ([]gona.Location, error) {
-	ret := _m.Called(_a0)
+// GetLocations provides a mock function with given fields: ctx
+func (_m *MockClientInterface) GetLocations(ctx context.Context) ([]gona.Location, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetLocations")
@@ -479,10 +479,10 @@ func (_m *MockClientInterface) GetLocations(_a0 context.Context) ([]gona.Locatio
 	var r0 []gona.Location
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context) ([]gona.Location, error)); ok {
-		return rf(_a0)
+		return rf(ctx)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context) []gona.Location); ok {
-		r0 = rf(_a0)
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]gona.Location)
@@ -490,7 +490,7 @@ func (_m *MockClientInterface) GetLocations(_a0 context.Context) ([]gona.Locatio
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(_a0)
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -504,12 +504,12 @@ type MockClientInterface_GetLocations_Call struct {
 }
 
 // GetLocations is a helper method to define mock.On call
-//   - _a0 context.Context
-func (_e *MockClientInterface_Expecter) GetLocations(_a0 interface{}) *MockClientInterface_GetLocations_Call {
-	return &MockClientInterface_GetLocations_Call{Call: _e.mock.On("GetLocations", _a0)}
+//   - ctx context.Context
+func (_e *MockClientInterface_Expecter) GetLocations(ctx interface{}) *MockClientInterface_GetLocations_Call {
+	return &MockClientInterface_GetLocations_Call{Call: _e.mock.On("GetLocations", ctx)}
 }
 
-func (_c *MockClientInterface_GetLocations_Call) Run(run func(_a0 context.Context)) *MockClientInterface_GetLocations_Call {
+func (_c *MockClientInterface_GetLocations_Call) Run(run func(ctx context.Context)) *MockClientInterface_GetLocations_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context))
 	})
@@ -526,9 +526,9 @@ func (_c *MockClientInterface_GetLocations_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// GetOSs provides a mock function with given fields: _a0
-func (_m *MockClientInterface) GetOSs(_a0 context.Context) ([]gona.OS, error) {
-	ret := _m.Called(_a0)
+// GetOSs provides a mock function with given fields: ctx
+func (_m *MockClientInterface) GetOSs(ctx context.Context) ([]gona.OS, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOSs")
@@ -537,10 +537,10 @@ func (_m *MockClientInterface) GetOSs(_a0 context.Context) ([]gona.OS, error) {
 	var r0 []gona.OS
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context) ([]gona.OS, error)); ok {
-		return rf(_a0)
+		return rf(ctx)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context) []gona.OS); ok {
-		r0 = rf(_a0)
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]gona.OS)
@@ -548,7 +548,7 @@ func (_m *MockClientInterface) GetOSs(_a0 context.Context) ([]gona.OS, error) {
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(_a0)
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -562,12 +562,12 @@ type MockClientInterface_GetOSs_Call struct {
 }
 
 // GetOSs is a helper method to define mock.On call
-//   - _a0 context.Context
-func (_e *MockClientInterface_Expecter) GetOSs(_a0 interface{}) *MockClientInterface_GetOSs_Call {
-	return &MockClientInterface_GetOSs_Call{Call: _e.mock.On("GetOSs", _a0)}
+//   - ctx context.Context
+func (_e *MockClientInterface_Expecter) GetOSs(ctx interface{}) *MockClientInterface_GetOSs_Call {
+	return &MockClientInterface_GetOSs_Call{Call: _e.mock.On("GetOSs", ctx)}
 }
 
-func (_c *MockClientInterface_GetOSs_Call) Run(run func(_a0 context.Context)) *MockClientInterface_GetOSs_Call {
+func (_c *MockClientInterface_GetOSs_Call) Run(run func(ctx context.Context)) *MockClientInterface_GetOSs_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context))
 	})
@@ -584,9 +584,9 @@ func (_c *MockClientInterface_GetOSs_Call) RunAndReturn(run func(context.Context
 	return _c
 }
 
-// GetSSHKey provides a mock function with given fields: _a0, id
-func (_m *MockClientInterface) GetSSHKey(_a0 context.Context, id int) (gona.SSHKey, error) {
-	ret := _m.Called(_a0, id)
+// GetSSHKey provides a mock function with given fields: ctx, id
+func (_m *MockClientInterface) GetSSHKey(ctx context.Context, id int) (gona.SSHKey, error) {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetSSHKey")
@@ -595,16 +595,16 @@ func (_m *MockClientInterface) GetSSHKey(_a0 context.Context, id int) (gona.SSHK
 	var r0 gona.SSHKey
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) (gona.SSHKey, error)); ok {
-		return rf(_a0, id)
+		return rf(ctx, id)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) gona.SSHKey); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(gona.SSHKey)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, id)
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -618,13 +618,13 @@ type MockClientInterface_GetSSHKey_Call struct {
 }
 
 // GetSSHKey is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockClientInterface_Expecter) GetSSHKey(_a0 interface{}, id interface{}) *MockClientInterface_GetSSHKey_Call {
-	return &MockClientInterface_GetSSHKey_Call{Call: _e.mock.On("GetSSHKey", _a0, id)}
+func (_e *MockClientInterface_Expecter) GetSSHKey(ctx interface{}, id interface{}) *MockClientInterface_GetSSHKey_Call {
+	return &MockClientInterface_GetSSHKey_Call{Call: _e.mock.On("GetSSHKey", ctx, id)}
 }
 
-func (_c *MockClientInterface_GetSSHKey_Call) Run(run func(_a0 context.Context, id int)) *MockClientInterface_GetSSHKey_Call {
+func (_c *MockClientInterface_GetSSHKey_Call) Run(run func(ctx context.Context, id int)) *MockClientInterface_GetSSHKey_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
@@ -641,9 +641,9 @@ func (_c *MockClientInterface_GetSSHKey_Call) RunAndReturn(run func(context.Cont
 	return _c
 }
 
-// GetServer provides a mock function with given fields: _a0, id
-func (_m *MockClientInterface) GetServer(_a0 context.Context, id int) (gona.Server, error) {
-	ret := _m.Called(_a0, id)
+// GetServer provides a mock function with given fields: ctx, id
+func (_m *MockClientInterface) GetServer(ctx context.Context, id int) (gona.Server, error) {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetServer")
@@ -652,16 +652,16 @@ func (_m *MockClientInterface) GetServer(_a0 context.Context, id int) (gona.Serv
 	var r0 gona.Server
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) (gona.Server, error)); ok {
-		return rf(_a0, id)
+		return rf(ctx, id)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int) gona.Server); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(gona.Server)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(_a0, id)
+		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -675,13 +675,13 @@ type MockClientInterface_GetServer_Call struct {
 }
 
 // GetServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockClientInterface_Expecter) GetServer(_a0 interface{}, id interface{}) *MockClientInterface_GetServer_Call {
-	return &MockClientInterface_GetServer_Call{Call: _e.mock.On("GetServer", _a0, id)}
+func (_e *MockClientInterface_Expecter) GetServer(ctx interface{}, id interface{}) *MockClientInterface_GetServer_Call {
+	return &MockClientInterface_GetServer_Call{Call: _e.mock.On("GetServer", ctx, id)}
 }
 
-func (_c *MockClientInterface_GetServer_Call) Run(run func(_a0 context.Context, id int)) *MockClientInterface_GetServer_Call {
+func (_c *MockClientInterface_GetServer_Call) Run(run func(ctx context.Context, id int)) *MockClientInterface_GetServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
@@ -698,9 +698,9 @@ func (_c *MockClientInterface_GetServer_Call) RunAndReturn(run func(context.Cont
 	return _c
 }
 
-// UnlinkServer provides a mock function with given fields: _a0, id
-func (_m *MockClientInterface) UnlinkServer(_a0 context.Context, id int) error {
-	ret := _m.Called(_a0, id)
+// UnlinkServer provides a mock function with given fields: ctx, id
+func (_m *MockClientInterface) UnlinkServer(ctx context.Context, id int) error {
+	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UnlinkServer")
@@ -708,7 +708,7 @@ func (_m *MockClientInterface) UnlinkServer(_a0 context.Context, id int) error {
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, int) error); ok {
-		r0 = rf(_a0, id)
+		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -722,13 +722,13 @@ type MockClientInterface_UnlinkServer_Call struct {
 }
 
 // UnlinkServer is a helper method to define mock.On call
-//   - _a0 context.Context
+//   - ctx context.Context
 //   - id int
-func (_e *MockClientInterface_Expecter) UnlinkServer(_a0 interface{}, id interface{}) *MockClientInterface_UnlinkServer_Call {
-	return &MockClientInterface_UnlinkServer_Call{Call: _e.mock.On("UnlinkServer", _a0, id)}
+func (_e *MockClientInterface_Expecter) UnlinkServer(ctx interface{}, id interface{}) *MockClientInterface_UnlinkServer_Call {
+	return &MockClientInterface_UnlinkServer_Call{Call: _e.mock.On("UnlinkServer", ctx, id)}
 }
 
-func (_c *MockClientInterface_UnlinkServer_Call) Run(run func(_a0 context.Context, id int)) *MockClientInterface_UnlinkServer_Call {
+func (_c *MockClientInterface_UnlinkServer_Call) Run(run func(ctx context.Context, id int)) *MockClientInterface_UnlinkServer_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(int))
 	})
