@@ -15,7 +15,7 @@ jobs:
         go: ["stable", "oldstable"]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Setup Go environment
@@ -36,7 +36,7 @@ jobs:
           sed -e 's#github.com/netactuate/gona#github.com/${{ github.repository }}#g' cover.out > tmpfile && mv tmpfile cover.out
       - name: Archive code coverage results
         if: matrix.go == 'stable'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: code-coverage-${{ matrix.go }}
           path: cover.out
