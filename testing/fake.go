@@ -3,12 +3,31 @@ package gonatesting
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/netactuate/gona/gona"
 )
 
 var _ gona.ClientInterface = (*FakeClient)(nil)
+
+// defaultLocations returns the default set of locations used by FakeClient.
+func defaultLocations() []gona.Location {
+	return []gona.Location{
+		{ID: 1, Name: "AMS Amsterdam", IATACode: "AMS", Continent: "EU"},
+		{ID: 2, Name: "LAX Los Angeles", IATACode: "LAX", Continent: "NA"},
+		{ID: 3, Name: "SJC San Jose", IATACode: "SJC", Continent: "NA"},
+	}
+}
+
+// defaultOSes returns the default set of OSes used by FakeClient.
+func defaultOSes() []gona.OS {
+	return []gona.OS{
+		{ID: 1, Os: "Ubuntu 22.04 LTS", Type: "linux", Bits: "64"},
+		{ID: 2, Os: "Debian 12", Type: "linux", Bits: "64"},
+		{ID: 3, Os: "Rocky Linux 9", Type: "linux", Bits: "64"},
+	}
+}
 
 // FakeClient implements ClientInterface with in-memory state management.
 // Use this for integration-style tests where you need realistic stateful behavior.
@@ -67,16 +86,8 @@ func NewFakeClient() *FakeClient {
 		nextServerID:     1000,
 		nextSSHKeyID:     100,
 		nextBGPSessionID: 500,
-		locations: []gona.Location{
-			{ID: 1, Name: "AMS Amsterdam", IATACode: "AMS", Continent: "EU"},
-			{ID: 2, Name: "LAX Los Angeles", IATACode: "LAX", Continent: "NA"},
-			{ID: 3, Name: "SJC San Jose", IATACode: "SJC", Continent: "NA"},
-		},
-		oses: []gona.OS{
-			{ID: 1, Os: "Ubuntu 22.04 LTS", Type: "linux", Bits: "64"},
-			{ID: 2, Os: "Debian 12", Type: "linux", Bits: "64"},
-			{ID: 3, Os: "Rocky Linux 9", Type: "linux", Bits: "64"},
-		},
+		locations:        defaultLocations(),
+		oses:             defaultOSes(),
 	}
 }
 
@@ -266,6 +277,16 @@ func (f *FakeClient) CreateSSHKey(ctx context.Context, name, key string) (gona.S
 	if name == "" {
 		return gona.SSHKey{}, fmt.Errorf("SSH key name cannot be empty")
 	}
+	if key == "" {
+		return gona.SSHKey{}, fmt.Errorf("SSH key cannot be empty")
+	}
+	// Basic check for common SSH key prefixes
+	if !(strings.HasPrefix(key, "ssh-rsa ") ||
+		strings.HasPrefix(key, "ssh-ed25519 ") ||
+		strings.HasPrefix(key, "ecdsa-sha2-") ||
+		strings.HasPrefix(key, "ssh-dss ")) {
+		return gona.SSHKey{}, fmt.Errorf("invalid SSH public key format")
+	}
 
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -359,9 +380,8 @@ func (f *FakeClient) CreateBGPSessions(ctx context.Context, mbPkgID int, groupID
 		ConfigStatus:   1,
 	}
 
-	// Inline append to avoid deadlock (AddBGPSession also acquires f.mu)
-	sessions, _ := f.bgpSessions[mbPkgID]
-	f.bgpSessions[mbPkgID] = append(sessions, session)
+	// Add using helper that assumes the lock is already held
+	f.addBGPSessionLocked(mbPkgID, session)
 
 	return session, nil
 }
@@ -459,8 +479,14 @@ func (f *FakeClient) AddSSHKey(key gona.SSHKey) {
 func (f *FakeClient) AddBGPSession(mbPkgID int, session *gona.BGPSession) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	f.addBGPSessionLocked(mbPkgID, session)
+}
+
+// addBGPSessionLocked adds a BGPSession to the map for a given mbPkgID.
+// Caller MUST already hold f.mu.
+func (f *FakeClient) addBGPSessionLocked(mbPkgID int, s *gona.BGPSession) {
 	sessions, _ := f.bgpSessions[mbPkgID]
-	f.bgpSessions[mbPkgID] = append(sessions, session)
+	f.bgpSessions[mbPkgID] = append(sessions, s)
 }
 
 // SetIPs sets the IPs for a server in the fake client's state
@@ -540,16 +566,8 @@ func (f *FakeClient) Reset() {
 	f.GetOSsError = nil
 
 	// Restore default locations and OSes
-	f.locations = []gona.Location{
-		{ID: 1, Name: "AMS Amsterdam", IATACode: "AMS", Continent: "EU"},
-		{ID: 2, Name: "LAX Los Angeles", IATACode: "LAX", Continent: "NA"},
-		{ID: 3, Name: "SJC San Jose", IATACode: "SJC", Continent: "NA"},
-	}
-	f.oses = []gona.OS{
-		{ID: 1, Os: "Ubuntu 22.04 LTS", Type: "linux", Bits: "64"},
-		{ID: 2, Os: "Debian 12", Type: "linux", Bits: "64"},
-		{ID: 3, Os: "Rocky Linux 9", Type: "linux", Bits: "64"},
-	}
+	f.locations = defaultLocations()
+	f.oses = defaultOSes()
 
 	// Also reset call tracking
 	f.ResetCalls()
