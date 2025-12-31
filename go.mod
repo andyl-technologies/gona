@@ -2,7 +2,7 @@ module github.com/netactuate/gona
 
 go 1.24
 
-require github.com/google/go-querystring v1.1.0
+require github.com/google/go-querystring v1.2.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
